@@ -16,8 +16,6 @@ class UserRole(enum.Enum):
 class User(BaseModel):
     __tablename__ = "users"
 
+    sso_id = Column(BigInteger, nullable=False, unique=True)
     username = Column(String(32), nullable=False, unique=True)
-    password = Column(String(255), nullable=False, unique=True)
-    email = Column(String(255), nullable=False, unique=True)
     role = Column(Enum(UserRole, schema=SCHEMA), nullable=False, default=UserRole.WORKER)
-    bill = Column(BigInteger, nullable=False, unique=True)

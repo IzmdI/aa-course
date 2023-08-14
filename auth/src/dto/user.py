@@ -29,3 +29,7 @@ class UserUpdateDTO(BaseSchema):
 class Token(BaseSchema):
     access_token: str
     token_type: str
+
+
+class TokenPayload(BaseSchema):
+    sub: str | None

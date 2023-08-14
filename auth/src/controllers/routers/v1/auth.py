@@ -4,8 +4,9 @@ from fastapi import APIRouter, Depends, Path
 from fastapi.security import OAuth2PasswordRequestForm
 
 from application.settings.auth import Settings as Auth_settings
-from controllers.dependencies import oauth2_scheme
+from controllers.dependencies import get_current_active_user, oauth2_scheme
 from controllers.stub import Stub
+from db.tables import User
 from dto.user import Token, UserCreateDTO, UserDTO, UserUpdateDTO
 from services.user import UserService
 
@@ -19,34 +20,24 @@ async def login_for_access_token(
     auth_settings: Auth_settings = Depends(Stub(Auth_settings)),
 ):
     user = await service.authenticate_user(form_data.username, form_data.password)
-    access_token = service.create_access_token(
-        auth_settings=auth_settings, data={"sub": user.username, "role": user.role.value}
-    )
+    access_token = service.create_access_token(auth_settings=auth_settings, data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
 
 
 @router.get("/users/me", response_model=UserDTO)
-async def get_self_user(
-    token: Annotated[str, Depends(oauth2_scheme)],
-    service: UserService = Depends(Stub(UserService)),
-    auth_settings: Auth_settings = Depends(Stub(Auth_settings)),
-):
-    return await service.get_current_active_user(auth_settings, token)
+async def get_self(user: User = Depends(get_current_active_user)):
+    return user
 
 
 @router.post("/signin")
-async def sign_in(
-    user_data: UserCreateDTO,
-    service: UserService = Depends(Stub(UserService)),
-):
+async def sign_in(user_data: UserCreateDTO, service: UserService = Depends(Stub(UserService))):
     await service.create_user(user_data)
     return {"signed in": "ok"}
 
 
 @router.post("/login", response_model=UserDTO)
 async def log_in(
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    service: UserService = Depends(Stub(UserService)),
+    form_data: Annotated[OAuth2PasswordRequestForm, Depends()], service: UserService = Depends(Stub(UserService))
 ):
     return await service.authenticate_user(form_data.username, form_data.password)
 

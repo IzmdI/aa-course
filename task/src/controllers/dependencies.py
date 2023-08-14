@@ -1,7 +1,6 @@
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from pydantic import ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from starlette import status
@@ -9,15 +8,17 @@ from typing_extensions import AsyncGenerator
 
 from application.settings.auth import Settings as Auth_settings
 from controllers.stub import Stub
-from db.tables import User
-from db.tables import UserRole
+
+
+from db.tables import User, UserRole
 from dto.user import TokenPayload
+from repositories.task import TaskRepo
 from repositories.user import UserRepo
-from services.user import UserService
+from services.task import TaskService
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/token")
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# TODO: брать адрес из env / настроек
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:8010/api/v1/token")
 
 
 async def get_session(sessionmaker: async_sessionmaker = Depends(Stub(async_sessionmaker))) -> AsyncGenerator:
@@ -25,12 +26,12 @@ async def get_session(sessionmaker: async_sessionmaker = Depends(Stub(async_sess
         yield session
 
 
-async def get_user_service(session: AsyncSession = Depends(get_session)) -> UserService:
-    return UserService(user_repo=UserRepo(session), pwd_context=pwd_context)
+async def get_task_service(session: AsyncSession = Depends(get_session)) -> TaskService:
+    return TaskService(user_repo=UserRepo(session), task_repo=TaskRepo(session))
 
 
 async def get_current_user(
-    service: UserService = Depends(get_user_service),
+    service: TaskService = Depends(get_task_service),
     auth_settings: Auth_settings = Depends(Stub(Auth_settings)),
     token: str = Depends(oauth2_scheme),
 ) -> User:

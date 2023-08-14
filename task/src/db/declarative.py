@@ -8,6 +8,6 @@ CONVENTION = {
     "fk": "FK_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
     "pk": "PK_%(table_name)s",
 }
-SCHEMA = "users"
+SCHEMA = "tasks"
 
 Base = declarative_base(metadata=MetaData(schema=SCHEMA, naming_convention=CONVENTION))

@@ -5,8 +5,8 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     RELOAD: bool = True
     SERVER_HOST: str = "0.0.0.0"
-    SERVER_PORT: int = 8010
+    SERVER_PORT: int = 8020
     CORS_ORIGINS: str = "*"
 
     class Config:
-        env_prefix = "AUTH_"
+        env_prefix = "TASK_"

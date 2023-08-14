@@ -17,7 +17,7 @@ class UserService:
         self.user_repo = user_repo
         self.pwd_context = pwd_context
 
-    def decode_token(self, token: str, auth_settings: Auth_settings = Auth_settings()) -> tuple[str, str]:
+    def decode_token(self, token: str, auth_settings: Auth_settings = Auth_settings()) -> str:
         credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
@@ -26,18 +26,17 @@ class UserService:
         try:
             payload = jwt.decode(token, auth_settings.SECRET_KEY, algorithms=[auth_settings.ALGORITHM])
             username: str = payload.get("sub")
-            role: str = payload.get("role")
             if username is None:
                 raise credentials_exception
         except JWTError:
             raise credentials_exception
-        return username, role
+        return username
 
     async def get_current_user(self, auth_settings: Auth_settings, token: str) -> User:
         username, _ = self.decode_token(token, auth_settings)
         user = await self.user_repo.get_user(username)
         if not user:
-            raise
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         return user
 
     async def get_current_active_user(self, auth_settings: Auth_settings, token: str) -> User:
@@ -80,29 +79,34 @@ class UserService:
         await self.user_repo.session.commit()
 
     async def update_user(self, token: str, user_id: int, user_data: UserUpdateDTO) -> None:
-        username, role = self.decode_token(token)
+        username = self.decode_token(token)
         user = await self.user_repo.get_user_by_id(user_id)
         if not user:
-            raise
-        if role not in (UserRole.ADMIN.value, UserRole.MODERATOR.value):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        if user.role not in (UserRole.ADMIN.value, UserRole.MODERATOR.value):
             if username != user.username:
-                raise
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN, detail="The user doesn't have enough privileges"
+                )
+            if user_data.role:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN, detail="The user doesn't have enough privileges"
+                )
         if user_data.password:
             user_data.password = self.get_password_hash(user_data.password)
         await self.user_repo.update_user(user_id, **user_data.dict(exclude_none=True))
         # TODO: отправить CUD ивент об обновлении юзера
-        # ИЛИ
-        # отправить BE ивент, если сменилась роль
+        # TODO: отправить BE ивент, если сменилась роль
         await self.user_repo.session.commit()
 
     async def delete_user(self, token: str, user_id: int) -> None:
-        username, role = self.decode_token(token)
+        username = self.decode_token(token)
         user = await self.user_repo.get_user_by_id(user_id)
         if not user:
-            raise
-        if role not in (UserRole.ADMIN.value, UserRole.MODERATOR.value):
-            if username != user.username:
-                raise
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        if await self.user_repo.get_user(username) not in (UserRole.ADMIN.value, UserRole.MODERATOR.value):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="The user doesn't have enough privileges"
+            )
         await self.user_repo.delete_user(user_id)
-        # TODO: отправить CUD ивент об удалении юзера
         await self.user_repo.session.commit()
