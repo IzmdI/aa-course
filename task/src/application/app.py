@@ -7,13 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from application.settings.app import Settings as App_settings
 from application.settings.auth import Settings as Auth_settings
-from application.settings.db import Settings as DB_settings
 from application.settings.broker import Settings as Broker_settings
+from application.settings.db import Settings as DB_settings
 from application.settings.logger import config, settings
 from controllers.dependencies import get_session, get_task_service, oauth2_scheme
 from controllers.routers.v1.routers import router
 from services.task import TaskService
-
 
 app_settings = App_settings()
 auth_settings = Auth_settings()

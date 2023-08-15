@@ -14,7 +14,6 @@ from controllers.dependencies import get_session, get_user_service, oauth2_schem
 from controllers.routers.v1.routers import router
 from services.user import UserService
 
-
 app_settings = App_settings()
 auth_settings = Auth_settings()
 db_url = DB_settings().get_db_url()

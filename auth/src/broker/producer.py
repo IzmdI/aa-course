@@ -5,9 +5,9 @@ from typing import Any
 from uuid import UUID
 
 from aiokafka import AIOKafkaProducer
-from broker.schemas import ProducerEvent
 
 from application.settings.broker import Settings as Broker_settings
+from broker.schemas import ProducerEvent
 
 
 def serializer(obj: Any) -> bytes:

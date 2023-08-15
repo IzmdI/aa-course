@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
 
-from broker.producer import produce_event
-from broker.schemas import Action, ProducerEvent, UserMessage
 from fastapi import HTTPException
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -9,6 +7,8 @@ from starlette import status
 
 from application.settings.auth import Settings as Auth_settings
 from application.settings.broker import Settings as Broker_settings
+from broker.producer import produce_event
+from broker.schemas import Action, ProducerEvent, UserMessage
 from db.tables import User
 from db.tables.user import UserRole
 from dto.user import UserCreateDTO, UserUpdateDTO
