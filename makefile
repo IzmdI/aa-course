@@ -12,7 +12,7 @@ isort: ## sort imports
 black: ## format code
 	black .
 
-lint: clean isort black ## do autoflake, isort and black
+format: clean isort black ## do autoflake, isort and black
 
 run_db: ## run database
 	docker-compose up -d

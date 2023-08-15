@@ -9,12 +9,10 @@ from typing_extensions import AsyncGenerator
 
 from application.settings.auth import Settings as Auth_settings
 from controllers.stub import Stub
-from db.tables import User
-from db.tables import UserRole
+from db.tables import User, UserRole
 from dto.user import TokenPayload
 from repositories.user import UserRepo
 from services.user import UserService
-
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/token")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

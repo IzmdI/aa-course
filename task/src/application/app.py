@@ -2,16 +2,15 @@ import logging.config
 
 from fastapi import FastAPI
 from fastapi.security import OAuth2PasswordBearer
+from middleware.cors import get_cors_middleware
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from application.settings.auth import Settings as Auth_settings
 from application.settings.app import Settings as app_settings
+from application.settings.auth import Settings as Auth_settings
 from application.settings.db import Settings as db_settings
-from application.settings.logger import settings, config
+from application.settings.logger import config, settings
 from controllers.dependencies import get_session, oauth2_scheme
-
 from controllers.routers.v1.routers import router
-from middleware.cors import get_cors_middleware
 
 app_settings = app_settings()
 auth_settings = Auth_settings()

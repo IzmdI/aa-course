@@ -36,11 +36,7 @@ class TaskRepo(BaseRepository):
         return result.scalars().all()
 
     async def get_undone_tasks(self) -> list[Task] | Sequence[Row | RowMapping | Any]:
-        query = (
-            select(Task)
-            .filter(Task.status.is_not(TaskStatus.DONE))
-            .order_by(func.random())
-        )
+        query = select(Task).filter(Task.status.is_not(TaskStatus.DONE)).order_by(func.random())
         result = await self.session.execute(query)
         return result.scalars().all()
 
