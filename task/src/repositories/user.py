@@ -24,10 +24,10 @@ class UserRepo(BaseRepository):
         user = await self.session.execute(query)
         return user.first()
 
-    async def get_random_users(self) -> User | Sequence[Row | RowMapping | Any]:
+    async def get_random_users(self) -> list[User] | Sequence[Row | RowMapping | Any]:
         query = select(User).filter(User.role.not_in((UserRole.ADMIN, UserRole.MODERATOR))).order_by(func.random())
-        user = await self.session.execute(query)
-        return user.scalars().all()
+        users = await self.session.execute(query)
+        return users.scalars().all()
 
     async def get_user_by_id(self, user_id: int) -> User | None:
         query = select(User).filter_by(id=user_id)
@@ -43,13 +43,15 @@ class UserRepo(BaseRepository):
         await self.session.flush([user])
         return user
 
-    async def update_user(self, user_id: int, **kwargs) -> None:
-        unique_fields_exceptions = await self.validate_uniques_by_values(User, kwargs)
-        if unique_fields_exceptions:
-            raise IntegrityError(params=unique_fields_exceptions, statement=None, orig=None)
-        query = update(User).values(**kwargs).filter_by(id=user_id)
-        await self.session.execute(query)
+    async def update_user(self, sso_id: int, **kwargs) -> None:
+        try:
+            query = update(User).values(**kwargs).filter_by(sso_id=sso_id)
+            await self.session.execute(query)
+        except IntegrityError:
+            unique_fields_exceptions = await self.validate_uniques_by_values(User, kwargs)
+            if unique_fields_exceptions:
+                raise IntegrityError(params=unique_fields_exceptions, statement=None, orig=None)
 
-    async def delete_user(self, user_id: int) -> None:
-        query = delete(User).filter_by(id=user_id)
+    async def delete_user(self, sso_id: int) -> None:
+        query = delete(User).filter_by(sso_id=sso_id)
         await self.session.execute(query)

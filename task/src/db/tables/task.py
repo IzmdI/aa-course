@@ -6,7 +6,7 @@ from db.declarative import SCHEMA
 from db.tables import BaseModel
 
 
-class TaskStatus(enum.Enum):
+class TaskStatus(str, enum.Enum):
     NEW = "new"
     ASSIGNED = "assigned"
     DONE = "done"

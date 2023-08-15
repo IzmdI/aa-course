@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Path
 from controllers.dependencies import get_current_active_user, get_current_moderator_user
 from controllers.stub import Stub
 from db.tables import User
-from dto.schemas.request import TaskFilterSchema
+from dto.schemas.request import CommonBaseQueryParamSchema, TaskFilterSchema
 from dto.task import TaskCreateDTO
 from services.task import TaskService
 
@@ -22,11 +22,12 @@ async def create_task(
 
 @router.get("")
 async def get_tasks(
-    filter_schema: TaskFilterSchema,
+    common_params: CommonBaseQueryParamSchema = Depends(),
+    filter_schema: TaskFilterSchema = Depends(),
     user: User = Depends(get_current_active_user),
     service: TaskService = Depends(Stub(TaskService)),
 ):
-    return await service.get_tasks(filter_schema, assignee=user)
+    return await service.get_tasks(assignee=user, filters=filter_schema, common_params=common_params)
 
 
 @router.put("/{task_id}/done")
@@ -35,7 +36,7 @@ async def update_task(
     user: User = Depends(get_current_active_user),  # noqa
     service: TaskService = Depends(Stub(TaskService)),
 ):
-    await service.done_task(task_id)
+    await service.done_task(task_id, user)
     return {"done": "ok"}
 
 

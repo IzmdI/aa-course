@@ -22,7 +22,7 @@ class TaskRepo(BaseRepository):
         return task.scalar_one_or_none()
 
     async def get_tasks(
-        self, common_params: CommonBaseQueryParamSchema = CommonBaseQueryParamSchema(), **kwargs
+        self, common_params: CommonBaseQueryParamSchema, **kwargs
     ) -> list[Task] | Sequence[Row | RowMapping | Any]:
         query = (
             select(Task)
@@ -36,7 +36,7 @@ class TaskRepo(BaseRepository):
         return result.scalars().all()
 
     async def get_undone_tasks(self) -> list[Task] | Sequence[Row | RowMapping | Any]:
-        query = select(Task).filter(Task.status.is_not(TaskStatus.DONE)).order_by(func.random())
+        query = select(Task).filter(Task.status != TaskStatus.DONE).order_by(func.random())
         result = await self.session.execute(query)
         return result.scalars().all()
 

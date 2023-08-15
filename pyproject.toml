@@ -43,6 +43,7 @@ skip_glob = ["**/migrations/*", ]
 # здесь должны быть перечислены все дирктории проекта
 known_local_folder = [
     "application",
+    "broker",
     "controllers",
     "db",
     "dto",

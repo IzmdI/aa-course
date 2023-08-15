@@ -19,3 +19,4 @@ class User(BaseModel):
     sso_id = Column(BigInteger, nullable=False, unique=True)
     username = Column(String(32), nullable=False, unique=True)
     role = Column(Enum(UserRole, schema=SCHEMA), nullable=False, default=UserRole.WORKER)
+    email = Column(String(255), nullable=False, unique=True)

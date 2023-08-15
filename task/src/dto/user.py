@@ -10,3 +10,11 @@ class UserCreateDTO(BaseSchema):
     sso_id: int
     username: str
     role: UserRole
+    email: str
+
+
+class UserUpdateDTO(BaseSchema):
+    sso_id: int
+    username: str
+    role: UserRole
+    email: str

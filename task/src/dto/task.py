@@ -12,9 +12,9 @@ class TaskDTO(ORMBaseSchema):
 
 
 class TaskCreateDTO(BaseSchema):
-    price: None
-    fee: None
+    price: int | None
+    fee: int | None
     text: str
     owner_id: int | None
     assignee_id: int | None
-    status: TaskStatus = TaskStatus.NEW
+    status: TaskStatus = TaskStatus.ASSIGNED

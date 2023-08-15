@@ -1,8 +1,8 @@
 """init tasks migration
 
-Revision ID: 1516064ebd3b
+Revision ID: b038ffae8955
 Revises: 
-Create Date: 2023-08-14 15:34:45.164134+00:00
+Create Date: 2023-08-15 10:12:47.460070+00:00
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '1516064ebd3b'
+revision = 'b038ffae8955'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -36,11 +36,13 @@ def upgrade():
     sa.Column('sso_id', sa.BigInteger(), nullable=False),
     sa.Column('username', sa.String(length=32), nullable=False),
     sa.Column('role', sa.Enum('ADMIN', 'MODERATOR', 'ACCOUNTANT', 'WORKER', name='userrole', schema='tasks'), nullable=False),
+    sa.Column('email', sa.String(length=255), nullable=False),
     sa.Column('id', sa.BigInteger(), autoincrement=True, nullable=False, comment='Идентификатор'),
     sa.Column('created_at', sa.DateTime(), nullable=False, comment='дата и время создания'),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False, comment='дата и время последнего обновления'),
     sa.Column('is_active', sa.Boolean(), nullable=False, comment='логическое удаление объекта'),
     sa.PrimaryKeyConstraint('id', name=op.f('PK_users')),
+    sa.UniqueConstraint('email', name=op.f('UQ_users_email')),
     sa.UniqueConstraint('sso_id', name=op.f('UQ_users_sso_id')),
     sa.UniqueConstraint('username', name=op.f('UQ_users_username')),
     schema='tasks'

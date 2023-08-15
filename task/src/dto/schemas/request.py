@@ -26,10 +26,10 @@ class CommonBaseQueryParamSchema(BaseModel):
 
 
 class TaskFilterSchema(BaseModel):
-    task_id: int | None
-    price: int | None
-    fee: int | None
-    text: str | None
-    owner_id: int | None
-    assignee_id: int | None
-    status: TaskStatus | None
+    task_id: int | None = None
+    price: int | None = None
+    fee: int | None = None
+    text: str | None = None
+    owner_id: int | None = None
+    assignee_id: int | None = None
+    status: TaskStatus | None = None

@@ -90,7 +90,7 @@ class UserService:
         username = self.decode_token(token)
         user = await self.user_repo.get_user_by_id(user_id)
         action_user = await self.user_repo.get_user(username)
-        if not user:
+        if not user or not action_user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         if action_user.role not in (UserRole.ADMIN, UserRole.MODERATOR):
             if username != user.username:
@@ -115,7 +115,7 @@ class UserService:
         username = self.decode_token(token)
         user = await self.user_repo.get_user_by_id(user_id)
         action_user = await self.user_repo.get_user(username)
-        if not user:
+        if not user or not action_user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
         if action_user.role not in (UserRole.ADMIN.value, UserRole.MODERATOR.value):
             raise HTTPException(
