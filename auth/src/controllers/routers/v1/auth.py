@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Path
 from fastapi.security import OAuth2PasswordRequestForm
 
 from application.settings.auth import Settings as Auth_settings
+from application.settings.broker import Settings as Broker_settings
 from controllers.dependencies import get_current_active_user, oauth2_scheme
 from controllers.stub import Stub
 from db.tables import User
@@ -30,8 +31,12 @@ async def get_self(user: User = Depends(get_current_active_user)):
 
 
 @router.post("/signin")
-async def sign_in(user_data: UserCreateDTO, service: UserService = Depends(Stub(UserService))):
-    await service.create_user(user_data)
+async def sign_in(
+    user_data: UserCreateDTO,
+    service: UserService = Depends(Stub(UserService)),
+    broker_settings: Broker_settings = Depends(Stub(Broker_settings)),
+):
+    await service.create_user(user_data, broker_settings)
     return {"signed in": "ok"}
 
 
@@ -48,8 +53,9 @@ async def update_user(
     user_data: UserUpdateDTO,
     user_id: int = Path(),
     service: UserService = Depends(Stub(UserService)),
+    broker_settings: Broker_settings = Depends(Stub(Broker_settings)),
 ):
-    await service.update_user(token, user_id, user_data)
+    await service.update_user(token, user_id, user_data, broker_settings)
     return {"updated": "ok"}
 
 
@@ -58,6 +64,7 @@ async def delete_user(
     token: Annotated[str, Depends(oauth2_scheme)],
     user_id: int = Path(),
     service: UserService = Depends(Stub(UserService)),
+    broker_settings: Broker_settings = Depends(Stub(Broker_settings)),
 ):
-    await service.delete_user(token, user_id)
+    await service.delete_user(token, user_id, broker_settings)
     return {"deleted": "ok"}

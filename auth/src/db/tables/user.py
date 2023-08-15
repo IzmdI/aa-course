@@ -6,7 +6,7 @@ from db.declarative import SCHEMA
 from db.tables import BaseModel
 
 
-class UserRole(enum.Enum):
+class UserRole(str, enum.Enum):
     ADMIN = "admin"
     MODERATOR = "moderator"
     ACCOUNTANT = "accountant"
