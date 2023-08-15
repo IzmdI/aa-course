@@ -80,7 +80,8 @@ class UserService:
         user = await self.user_repo.create_user(user_data)
         await self.user_repo.session.commit()
         event = ProducerEvent(
-            topic=broker_settings.TOPIC_USER_STREAM, value=UserMessage.from_model(user, action=Action.CREATE)
+            topic=broker_settings.TOPIC_USER_STREAM,
+            value=UserMessage.from_model(user, action=Action.CREATE),
         )
         await produce_event(event, broker_settings)
 
@@ -95,11 +96,13 @@ class UserService:
         if action_user.role not in (UserRole.ADMIN, UserRole.MODERATOR):
             if username != user.username:
                 raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN, detail="The user doesn't have enough privileges"
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="The user doesn't have enough privileges",
                 )
             if user_data.role:
                 raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN, detail="The user doesn't have enough privileges"
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="The user doesn't have enough privileges",
                 )
         if user_data.password:
             user_data.password = self.get_password_hash(user_data.password)
@@ -108,7 +111,10 @@ class UserService:
         self.user_repo.session.expunge(user)
         user = await self.user_repo.get_user_by_id(user_id)
         topic = broker_settings.TOPIC_USER_ROLE_CHANGED if user_data.role else broker_settings.TOPIC_USER_STREAM
-        event = ProducerEvent(topic=topic, value=UserMessage.from_model(user, action=Action.UPDATE))
+        event = ProducerEvent(
+            topic=topic,
+            value=UserMessage.from_model(user, action=Action.UPDATE),
+        )
         await produce_event(event, broker_settings)
 
     async def delete_user(self, token: str, user_id: int, broker_settings: Broker_settings) -> None:
@@ -116,14 +122,19 @@ class UserService:
         user = await self.user_repo.get_user_by_id(user_id)
         action_user = await self.user_repo.get_user(username)
         if not user or not action_user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found",
+            )
         if action_user.role not in (UserRole.ADMIN.value, UserRole.MODERATOR.value):
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="The user doesn't have enough privileges"
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="The user doesn't have enough privileges",
             )
         await self.user_repo.delete_user(user_id)
         await self.user_repo.session.commit()
         event = ProducerEvent(
-            topic=broker_settings.TOPIC_USER_STREAM, value=UserMessage.from_model(user, action=Action.DELETE)
+            topic=broker_settings.TOPIC_USER_STREAM,
+            value=UserMessage.from_model(user, action=Action.DELETE),
         )
         await produce_event(event, broker_settings)

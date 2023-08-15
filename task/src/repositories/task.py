@@ -16,8 +16,10 @@ class TaskRepo(BaseRepository):
         result = await self.session.execute(query)
         return result.scalar()
 
-    async def get_task_by_id(self, task_id: int) -> Task | None:
+    async def get_task_by_id(self, task_id: int, by_undone_status: bool = False) -> Task | None:
         query = select(Task).filter_by(id=task_id)
+        if by_undone_status:
+            query = query.filter(Task.status != TaskStatus.DONE)
         task = await self.session.execute(query)
         return task.scalar_one_or_none()
 

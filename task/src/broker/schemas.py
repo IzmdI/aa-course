@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Any
 from uuid import UUID, uuid4
 
-from db.tables import User, UserRole
+from db.tables import Task, TaskStatus, User, UserRole
 
 
 class Action(str, Enum):
@@ -37,3 +37,28 @@ class UserMessage:
     @classmethod
     def from_model(cls, model: User, action: Action):
         return cls(action=action, sso_id=model.id, role=model.role, username=model.username, email=model.email)
+
+
+@dataclass
+class TaskMessage:
+    action: Action
+    task_id: int
+    price: int
+    fee: int
+    text: str
+    owner_id: int
+    assignee_id: int
+    status: TaskStatus
+
+    @classmethod
+    def from_model(cls, model: Task, action: Action):
+        return cls(
+            action=action,
+            task_id=model.id,
+            price=model.price,
+            fee=model.fee,
+            text=model.text,
+            owner_id=model.owner_id,
+            assignee_id=model.assignee_id,
+            status=model.status,
+        )
