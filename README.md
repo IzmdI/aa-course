@@ -2,4 +2,4 @@
 Курс по асинхронной архитектуре
 
 ## Схемы
-Находятся тут https://miro.com/app/board/uXjVMxFUl2Q=/
+Доска MIRO тут [тыц](https://miro.com/app/board/uXjVMxFUl2Q=/).
