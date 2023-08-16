@@ -51,15 +51,15 @@ services:
       - kafka
     environment:
       KAFKA_TOPIC_USER_STREAM: ${KAFKA_TOPIC_USER_STREAM}
-      KAFKA_TOPIC_USER_ROLE_CHANGED: ${KAFKA_TOPIC_USER_ROLE_CHANGED}
+      KAFKA_TOPIC_USER_ROLE: ${KAFKA_TOPIC_USER_ROLE}
       KAFKA_TOPIC_TASK_STREAM: ${KAFKA_TOPIC_TASK_STREAM}
-      KAFKA_TOPIC_TASK_STATUS_CHANGED: ${KAFKA_TOPIC_TASK_STATUS_CHANGED}
+      KAFKA_TOPIC_TASK_DONE: ${KAFKA_TOPIC_TASK_DONE}
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
               cub kafka-ready -b kafka:29092 1 30 && \
               kafka-topics --create --topic ${KAFKA_TOPIC_USER_STREAM} --partitions 4 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092 && \
-              kafka-topics --create --topic ${KAFKA_TOPIC_USER_ROLE_CHANGED} --partitions 4 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092 && \
+              kafka-topics --create --topic ${KAFKA_TOPIC_USER_ROLE} --partitions 4 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092 && \
               kafka-topics --create --topic ${KAFKA_TOPIC_TASK_STREAM} --partitions 4 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092 && \
-              kafka-topics --create --topic ${KAFKA_TOPIC_TASK_STATUS_CHANGED} --partitions 4 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092'"
+              kafka-topics --create --topic ${KAFKA_TOPIC_TASK_DONE} --partitions 4 --replication-factor 1 --if-not-exists --bootstrap-server kafka:29092'"
 
   kafka-ui:
     container_name: kafka-ui

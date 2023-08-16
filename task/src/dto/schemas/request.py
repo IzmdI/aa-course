@@ -1,4 +1,5 @@
 from enum import Enum
+from uuid import UUID
 
 from fastapi import Query
 from pydantic import BaseModel, Field
@@ -26,10 +27,10 @@ class CommonBaseQueryParamSchema(BaseModel):
 
 
 class TaskFilterSchema(BaseModel):
-    task_id: int | None = None
-    price: int | None = None
-    fee: int | None = None
-    text: str | None = None
-    owner_id: int | None = None
-    assignee_id: int | None = None
-    status: TaskStatus | None = None
+    task_id: int | None = Field(Query(None, gt=0, description="идентификатор задачи"))
+    price: int | None = Field(Query(None, ge=10, le=20, description="цена задачи"))
+    fee: int | None = Field(Query(None, ge=20, le=40, description="вознаграждение задачи"))
+    text: str | None = Field(Query(None, description="описание задачи"))
+    owner_id: UUID | None = Field(Query(None, description="публичный идентификатор постановщика задачи"))
+    assignee_id: UUID | None = Field(Query(None, description="публичный идентификатор исполнителя задачи"))
+    status: TaskStatus | None = Field(Query(None, description="статус задачи"))
