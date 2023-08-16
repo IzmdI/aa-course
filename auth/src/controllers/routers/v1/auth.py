@@ -22,7 +22,12 @@ async def login_for_access_token(
 ):
     user = await service.authenticate_user(form_data.username, form_data.password)
     access_token = service.create_access_token(auth_settings=auth_settings, data={"sub": user.username})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user_public_id": user.public_id,
+        "user_role": user.role,
+    }
 
 
 @router.get("/users/me", response_model=UserDTO)

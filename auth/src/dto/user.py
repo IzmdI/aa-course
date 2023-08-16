@@ -32,6 +32,8 @@ class UserUpdateDTO(BaseSchema):
 class Token(BaseSchema):
     access_token: str
     token_type: str
+    user_public_id: UUID
+    user_role: UserRole
 
 
 class TokenPayload(BaseSchema):
