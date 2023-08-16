@@ -1,8 +1,11 @@
+from uuid import UUID
+
 from db.tables.user import UserRole
 from dto.base import BaseSchema, ORMBaseSchema
 
 
 class UserDTO(ORMBaseSchema):
+    public_id: UUID
     username: str
     email: str | None
     role: UserRole | None

@@ -36,5 +36,5 @@ class BrokerUserService:
         await self.user_repo.update_user(**user_data.dict())
 
     async def delete(self, msg: UserMessage) -> None:
-        user_sso_id = msg.sso_id
-        await self.user_repo.delete_user(user_sso_id)
+        user_public_id = msg.public_id
+        await self.user_repo.delete_user_by_public_id(user_public_id)

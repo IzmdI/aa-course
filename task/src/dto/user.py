@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from db.tables import UserRole
 from dto.base import BaseSchema
 
@@ -7,14 +9,14 @@ class TokenPayload(BaseSchema):
 
 
 class UserCreateDTO(BaseSchema):
-    sso_id: int
+    public_id: UUID
     username: str
     role: UserRole
     email: str
 
 
 class UserUpdateDTO(BaseSchema):
-    sso_id: int
+    public_id: UUID
     username: str
     role: UserRole
     email: str

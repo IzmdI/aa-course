@@ -16,45 +16,56 @@ class Action(str, Enum):
 class ProducerEvent:
     topic: str
     value: str | dict[str, Any]
-    key: str | int | UUID = uuid4()
+    key: UUID = uuid4()
+
+    @staticmethod
+    def dict_factory_for_batch(item: dict):
+        exclude_fields = ("topic",)
+        return {key: value for key, value in item if key not in exclude_fields}
 
 
 @dataclass
 class ConsumerEvent:
     topic: str
     value: str | dict[str, Any]
-    key: str | int | UUID = uuid4()
+    key: UUID = uuid4()
 
 
 @dataclass
 class UserMessage:
     action: Action
-    sso_id: int
+    public_id: UUID
     username: str
     role: UserRole
     email: str | None
 
     @classmethod
     def from_model(cls, model: User, action: Action):
-        return cls(action=action, sso_id=model.id, role=model.role, username=model.username, email=model.email)
+        return cls(
+            action=action,
+            public_id=model.public_id,
+            role=model.role,
+            username=model.username,
+            email=model.email,
+        )
 
 
 @dataclass
 class TaskMessage:
     action: Action
-    task_id: int
+    public_id: UUID
     price: int
     fee: int
     text: str
-    owner_id: int
-    assignee_id: int
+    owner_id: UUID
+    assignee_id: UUID
     status: TaskStatus
 
     @classmethod
     def from_model(cls, model: Task, action: Action):
         return cls(
             action=action,
-            task_id=model.id,
+            public_id=model.public_id,
             price=model.price,
             fee=model.fee,
             text=model.text,

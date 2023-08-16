@@ -110,7 +110,7 @@ class UserService:
         await self.user_repo.session.commit()
         self.user_repo.session.expunge(user)
         user = await self.user_repo.get_user_by_id(user_id)
-        topic = broker_settings.TOPIC_USER_ROLE_CHANGED if user_data.role else broker_settings.TOPIC_USER_STREAM
+        topic = broker_settings.TOPIC_USER_ROLE if user_data.role else broker_settings.TOPIC_USER_STREAM
         event = ProducerEvent(
             topic=topic,
             value=UserMessage.from_model(user, action=Action.UPDATE),

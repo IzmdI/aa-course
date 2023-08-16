@@ -13,8 +13,7 @@ from broker.service import BrokerUserService
 
 
 def key_deserializer(obj: bytes) -> UUID | str:
-    if isinstance(obj, bytes):
-        return obj.decode()
+    return obj.decode()
 
 
 def deserializer(obj: bytes) -> Any:
@@ -24,7 +23,7 @@ def deserializer(obj: bytes) -> Any:
 async def consume(broker_settings: Broker_settings) -> None:
     consumer = AIOKafkaConsumer(
         broker_settings.TOPIC_USER_STREAM,
-        broker_settings.TOPIC_USER_ROLE_CHANGED,
+        broker_settings.TOPIC_USER_ROLE,
         bootstrap_servers=broker_settings.SERVER,
         enable_auto_commit=True,
         key_deserializer=key_deserializer,

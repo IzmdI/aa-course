@@ -16,17 +16,23 @@ class Action(str, Enum):
 class ProducerEvent:
     topic: str
     value: str | dict[str, Any]
-    key: str | int | UUID = uuid4()
+    key: UUID = uuid4()
 
 
 @dataclass
 class UserMessage:
     action: Action
-    sso_id: int
+    public_id: UUID
     username: str
     role: UserRole
     email: str | None
 
     @classmethod
     def from_model(cls, model: User, action: Action):
-        return cls(action=action, sso_id=model.id, role=model.role, username=model.username, email=model.email)
+        return cls(
+            action=action,
+            public_id=model.public_id,
+            role=model.role,
+            username=model.username,
+            email=model.email,
+        )

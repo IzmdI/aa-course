@@ -8,7 +8,7 @@ from db.declarative import Base
 class BaseModel(Base):
     __abstract__ = True
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True, nullable=False, comment="Идентификатор")
+    id = Column(BigInteger, primary_key=True, autoincrement=True, nullable=False, index=True, comment="Идентификатор")
     created_at = Column(DateTime, nullable=False, comment="дата и время создания", default=datetime.datetime.now)
     updated_at = Column(
         DateTime,
