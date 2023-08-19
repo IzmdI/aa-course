@@ -18,11 +18,6 @@ class ProducerEvent:
     value: str | dict[str, Any]
     key: UUID = uuid4()
 
-    @staticmethod
-    def dict_factory_for_batch(item: dict):
-        exclude_fields = ("topic",)
-        return {key: value for key, value in item if key not in exclude_fields}
-
 
 @dataclass
 class ConsumerEvent:
@@ -53,10 +48,11 @@ class UserMessage:
 @dataclass
 class TaskMessage:
     action: Action
+    title: str
     public_id: UUID
     price: int
     fee: int
-    text: str
+    description: str | None
     owner_id: UUID
     assignee_id: UUID
     status: TaskStatus
@@ -65,10 +61,11 @@ class TaskMessage:
     def from_model(cls, model: Task, action: Action):
         return cls(
             action=action,
+            title=model.title,
             public_id=model.public_id,
             price=model.price,
             fee=model.fee,
-            text=model.text,
+            description=model.description,
             owner_id=model.owner_id,
             assignee_id=model.assignee_id,
             status=model.status,
