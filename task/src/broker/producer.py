@@ -29,9 +29,12 @@ def serializer(obj: Any) -> bytes:
     return json.dumps(recursive_serializer(obj)).encode()
 
 
-async def produce_event(event: ProducerEvent | list[ProducerEvent], broker_settings: Broker_settings) -> None:
+async def produce_event(event: ProducerEvent, broker_settings: Broker_settings) -> None:
     producer = AIOKafkaProducer(
-        bootstrap_servers=broker_settings.SERVER, value_serializer=serializer, key_serializer=serializer
+        bootstrap_servers=broker_settings.SERVER,
+        value_serializer=serializer,
+        key_serializer=serializer,
+        enable_idempotence=True,
     )
     await producer.start()
     await producer.send_and_wait(**asdict(event))
