@@ -7,9 +7,17 @@ from uuid import UUID
 from aiokafka import AIOKafkaConsumer
 
 from application.settings.broker import Settings as Broker_settings
-from broker.dependencies import broker_settings, get_broker_service
-from broker.schemas import UserMessage
+from broker.dependencies import broker_settings, get_user_broker_service
 from broker.service import BrokerUserService
+from broker.schemas import (
+    EventDataUserRole,
+    EventDataUserStreaming,
+)
+
+from schema_registry import validators
+
+user_role_validator = validators.UserRoleSchemaValidator()
+user_streaming_validator = validators.UserStreamingSchemaValidator()
 
 
 def key_deserializer(obj: bytes) -> UUID | str:
@@ -20,7 +28,7 @@ def deserializer(obj: bytes) -> Any:
     return json.loads(obj.decode())
 
 
-async def consume(broker_settings: Broker_settings) -> None:
+async def consume_users(broker_settings: Broker_settings) -> None:
     consumer = AIOKafkaConsumer(
         broker_settings.TOPIC_USER_STREAM,
         broker_settings.TOPIC_USER_ROLE,
@@ -29,11 +37,25 @@ async def consume(broker_settings: Broker_settings) -> None:
         key_deserializer=key_deserializer,
         value_deserializer=deserializer,
     )
-    broker_service: BrokerUserService = await get_broker_service()
+    user_service: BrokerUserService = await get_user_broker_service()
     await consumer.start()
     try:
         async for msg in consumer:
-            await broker_service(UserMessage(**msg.value))
+            match msg.topic:
+                case broker_settings.TOPIC_USER_STREAM:
+                    validator = user_streaming_validator
+                    event = EventDataUserStreaming
+                case broker_settings.TOPIC_USER_ROLE:
+                    validator = user_role_validator
+                    event = EventDataUserRole
+                case _:
+                    continue
+            if validator.is_valid(msg.value):
+                await user_service(event(**msg.value).event_data)
+            else:
+                # TODO: невалидные сообщения будем сваливать в мёртвую очередь,
+                #  которую будет разбирать специально обученный попуг
+                continue
     finally:
         await consumer.stop()
 
@@ -45,4 +67,4 @@ if __name__ == "__main__":
     else:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-    asyncio.run(consume(broker_settings))
+    asyncio.run(consume_users(broker_settings))

@@ -11,13 +11,13 @@ class TokenPayload(BaseSchema):
 
 class UserCreateDTO(BaseSchema):
     public_id: UUID
-    username: str
+    username: Optional[str] = None
     role: UserRole
-    email: str
+    email: Optional[str] = None
 
 
 class UserUpdateDTO(BaseSchema):
     public_id: UUID
-    username: str
-    role: UserRole
-    email: str
+    username: Optional[str] = None
+    role: Optional[UserRole] = None
+    email: Optional[str] = None

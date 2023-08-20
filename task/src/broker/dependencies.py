@@ -17,6 +17,6 @@ async def get_session(sessionmaker: async_sessionmaker = sessionmaker_class) -> 
         yield session_obj
 
 
-async def get_broker_service() -> BrokerUserService:
+async def get_user_broker_service() -> BrokerUserService:
     session: AsyncSession = await anext(get_session())
     return BrokerUserService(session)
