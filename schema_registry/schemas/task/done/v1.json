@@ -1,0 +1,64 @@
+{
+  "$defs": {
+    "Action": {
+      "enum": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "TaskDoneData": {
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/Action"
+        },
+        "public_id": {
+          "format": "uuid",
+          "title": "Public Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "public_id"
+      ],
+      "title": "TaskDoneData",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "event_version": {
+      "title": "Event Version",
+      "type": "integer"
+    },
+    "event_name": {
+      "title": "Event Name",
+      "type": "string"
+    },
+    "event_time": {
+      "title": "Event Time",
+      "type": "string"
+    },
+    "event_producer": {
+      "title": "Event Producer",
+      "type": "string"
+    },
+    "event_data": {
+      "$ref": "#/$defs/TaskDoneData"
+    }
+  },
+  "required": [
+    "event_name",
+    "event_producer",
+    "event_data"
+  ],
+  "title": "EventDataTaskDone",
+  "type": "object"
+}

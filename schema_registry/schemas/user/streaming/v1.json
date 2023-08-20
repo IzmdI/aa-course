@@ -1,0 +1,109 @@
+{
+  "$defs": {
+    "Action": {
+      "enum": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "UserRole": {
+      "enum": [
+        "admin",
+        "moderator",
+        "accountant",
+        "worker"
+      ],
+      "title": "UserRole",
+      "type": "string"
+    },
+    "UserStreamingData": {
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/Action"
+        },
+        "public_id": {
+          "format": "uuid",
+          "title": "Public Id",
+          "type": "string"
+        },
+        "username": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Username"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UserRole"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "email": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Email"
+        }
+      },
+      "required": [
+        "action",
+        "public_id"
+      ],
+      "title": "UserStreamingData",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "event_version": {
+      "title": "Event Version",
+      "type": "integer"
+    },
+    "event_name": {
+      "title": "Event Name",
+      "type": "string"
+    },
+    "event_time": {
+      "title": "Event Time",
+      "type": "string"
+    },
+    "event_producer": {
+      "title": "Event Producer",
+      "type": "string"
+    },
+    "event_data": {
+      "$ref": "#/$defs/UserStreamingData"
+    }
+  },
+  "required": [
+    "event_id",
+    "event_version",
+    "event_name",
+    "event_time",
+    "event_producer",
+    "event_data"
+  ],
+  "title": "EventDataUserStreaming",
+  "type": "object"
+}
