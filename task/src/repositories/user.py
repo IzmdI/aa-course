@@ -41,7 +41,7 @@ class UserRepo(BaseRepository):
         return user.scalar_one_or_none()
 
     async def create_user(self, user_data: UserCreateDTO) -> User:
-        user = User(**user_data.dict(exclude_none=True))
+        user = User(**user_data.model_dump(exclude_none=True))
         unique_fields_exceptions = await self.validate_uniques(user)
         if unique_fields_exceptions:
             raise IntegrityError(params=unique_fields_exceptions, statement=None, orig=None)

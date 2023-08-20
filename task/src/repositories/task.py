@@ -43,7 +43,7 @@ class TaskRepo(BaseRepository):
         return result.scalars().all()
 
     async def create_task(self, task_data: TaskCreateDTO) -> Task:
-        task = Task(**task_data.dict(exclude_none=True))
+        task = Task(**task_data.model_dump(exclude_none=True))
         unique_fields_exceptions = await self.validate_uniques(task)
         if unique_fields_exceptions:
             raise IntegrityError(params=unique_fields_exceptions, statement=None, orig=None)

@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 from db.tables import UserRole
@@ -5,7 +6,7 @@ from dto.base import BaseSchema
 
 
 class TokenPayload(BaseSchema):
-    sub: str | None
+    sub: Optional[str] = None
 
 
 class UserCreateDTO(BaseSchema):

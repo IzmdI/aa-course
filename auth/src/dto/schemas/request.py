@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Optional
 
 from fastapi import Query
 from pydantic import BaseModel, Field
@@ -16,8 +17,8 @@ class OrderingFieldBase(str, Enum):
 
 
 class CommonBaseQueryParamSchema(BaseModel):
-    offset: int | None = Field(Query(None, ge=0, le=1000, example=0, description="смещение"))
-    limit: int | None = Field(Query(None, gt=0, le=1000, example=100, description="лимит"))
-    order_by: OrderingFieldBase | None = OrderingFieldBase.id
-    ordering: OrderingType = OrderingType.asc
-    is_active: bool | None = Field(Query(True, example=True, description="признак логического удаления"))
+    offset: Optional[int] = Field(Query(None, ge=0, le=1000, example=0, description="смещение"))
+    limit: Optional[int] = Field(Query(None, gt=0, le=1000, example=100, description="лимит"))
+    order_by: Optional[OrderingFieldBase] = OrderingFieldBase.id
+    ordering: Optional[OrderingType] = OrderingType.asc
+    is_active: Optional[bool] = Field(Query(True, example=True, description="признак логического удаления"))
