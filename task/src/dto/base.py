@@ -14,4 +14,4 @@ class ORMBaseSchema(BaseSchema):
     is_active: bool = Field(default=True, example=True, description="Признак логического удаления")
 
     class Config:
-        orm_mode = True
+        from_attributes = True

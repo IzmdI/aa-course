@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 
 from db.tables.user import UserRole
@@ -7,26 +8,26 @@ from dto.base import BaseSchema, ORMBaseSchema
 class UserDTO(ORMBaseSchema):
     public_id: UUID
     username: str
-    email: str | None
-    role: UserRole | None
-    bill: int | None
+    email: Optional[str] = None
+    role: Optional[UserRole] = None
+    bill: Optional[int] = None
 
 
 class UserCreateDTO(BaseSchema):
     username: str
     password: str
     email: str
-    role: UserRole | None = UserRole.WORKER
+    role: Optional[UserRole] = UserRole.WORKER
     bill: int
 
 
 class UserUpdateDTO(BaseSchema):
-    username: str | None
-    password: str | None
-    email: str | None
-    role: UserRole | None
-    bill: int | None
-    is_active: bool | None
+    username: Optional[str] = None
+    password: Optional[str] = None
+    email: Optional[str] = None
+    role: Optional[UserRole] = None
+    bill: Optional[int] = None
+    is_active: Optional[bool] = None
 
 
 class Token(BaseSchema):
@@ -35,4 +36,4 @@ class Token(BaseSchema):
 
 
 class TokenPayload(BaseSchema):
-    sub: str | None
+    sub: Optional[str] = None

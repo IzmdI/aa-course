@@ -1,4 +1,5 @@
-from pydantic import BaseSettings, PostgresDsn
+from pydantic.v1 import PostgresDsn
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):

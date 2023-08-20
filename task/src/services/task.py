@@ -23,7 +23,7 @@ class TaskService:
             result = await self.task_repo.get_task_by_id(filters.task_id)
         else:
             result = await self.task_repo.get_tasks(
-                assignee_id=assignee.public_id, common_params=common_params, **filters.dict(exclude_none=True)
+                assignee_id=assignee.public_id, common_params=common_params, **filters.model_dump(exclude_none=True)
             )
         return result
 
