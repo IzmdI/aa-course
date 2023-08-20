@@ -16,9 +16,9 @@ class Settings(BaseSettings):
         '%%(slug)s'
     )
 
-    SA_LOGS = False
-    LOGGING_LEVEL = 'INFO'
-    LOGGING_JSON = True
+    SA_LOGS: bool = False
+    LOGGING_LEVEL: str = 'INFO'
+    LOGGING_JSON: bool = True
 
     class Config:
         env_file_encoding = 'utf-8'
