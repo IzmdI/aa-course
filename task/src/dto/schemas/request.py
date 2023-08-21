@@ -5,7 +5,7 @@ from uuid import UUID
 from fastapi import Query
 from pydantic import BaseModel, Field
 
-from db.tables import TaskStatus
+from task.src.db.tables import TaskStatus
 
 
 class OrderingType(str, Enum):

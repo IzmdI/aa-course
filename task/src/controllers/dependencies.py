@@ -6,13 +6,13 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from starlette import status
 from typing_extensions import AsyncGenerator
 
-from application.settings.auth import Settings as Auth_settings
-from controllers.stub import Stub
-from db.tables import User, UserRole
-from dto.user import TokenPayload
-from repositories.task import TaskRepo
-from repositories.user import UserRepo
-from services.task import TaskService
+from task.src.application.settings.auth import Settings as Auth_settings
+from task.src.controllers.stub import Stub
+from task.src.db.tables import User, UserRole
+from task.src.dto.user import TokenPayload
+from task.src.repositories.task import TaskRepo
+from task.src.repositories.user import UserRepo
+from task.src.services.task import TaskService
 
 # TODO: брать адрес из env / настроек
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:8010/api/v1/token")

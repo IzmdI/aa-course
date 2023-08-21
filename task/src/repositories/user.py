@@ -4,9 +4,9 @@ from uuid import UUID
 from sqlalchemy import Row, RowMapping, delete, func, select, update
 from sqlalchemy.exc import IntegrityError
 
-from db.tables import User, UserRole
-from dto.user import UserCreateDTO
-from repositories.repo_base import BaseRepository
+from task.src.db.tables import User, UserRole
+from task.src.dto.user import UserCreateDTO
+from task.src.repositories.repo_base import BaseRepository
 
 
 class UserRepo(BaseRepository):

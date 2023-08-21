@@ -1,6 +1,6 @@
 import uvicorn
 
-from application.app import app_settings, init_app
+from task.src.application.app import app_settings, init_app
 
 app = init_app()
 

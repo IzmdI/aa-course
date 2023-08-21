@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel
 
-from db.tables import Task, TaskStatus, User, UserRole
+from task.src.db.tables import Task, TaskStatus, User, UserRole
 
 
 class Action(str, Enum):
@@ -72,11 +72,8 @@ class TaskStreamingData(BaseModel):
     title: str
     public_id: UUID
     price: int
-    fee: int
     description: Optional[str] = None
-    owner_id: UUID
     assignee_id: UUID
-    status: TaskStatus
 
     @classmethod
     def from_model(cls, model: Task, action: Action):
@@ -85,21 +82,20 @@ class TaskStreamingData(BaseModel):
             title=model.title,
             public_id=model.public_id,
             price=model.price,
-            fee=model.fee,
             description=model.description,
-            owner_id=model.owner_id,
             assignee_id=model.assignee_id,
-            status=model.status,
         )
 
 
 class TaskDoneData(BaseModel):
     action: Action
     public_id: UUID
+    assignee_id: UUID
+    fee: int
 
     @classmethod
     def from_model(cls, model: Task, action: Action):
-        return cls(action=action, public_id=model.public_id)
+        return cls(action=action, public_id=model.public_id, assignee_id=model.assignee_id, fee=model.fee)
 
 
 class EventDataTaskStreaming(EventData):

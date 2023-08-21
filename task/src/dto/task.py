@@ -1,8 +1,8 @@
 from typing import Optional
 from uuid import UUID
 
-from db.tables import TaskStatus
-from dto.base import BaseSchema, ORMBaseSchema
+from task.src.db.tables import TaskStatus
+from task.src.dto.base import BaseSchema, ORMBaseSchema
 
 
 class TaskDTO(ORMBaseSchema):

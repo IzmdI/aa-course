@@ -5,10 +5,10 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from starlette import status
 
-from application.settings.auth import Settings as Auth_settings
-from application.settings.broker import Settings as Broker_settings
-from broker.producer import produce_event
-from broker.schemas import (
+from auth.src.application.settings.auth import Settings as Auth_settings
+from auth.src.application.settings.broker import Settings as Broker_settings
+from auth.src.broker.producer import produce_event
+from auth.src.broker.schemas import (
     Action,
     EventDataUserRole,
     EventDataUserStreaming,
@@ -16,9 +16,9 @@ from broker.schemas import (
     UserRoleData,
     UserStreamingData,
 )
-from db.tables import User, UserRole
-from dto.user import UserCreateDTO, UserUpdateDTO
-from repositories.user import UserRepo
+from auth.src.db.tables import User, UserRole
+from auth.src.dto.user import UserCreateDTO, UserUpdateDTO
+from auth.src.repositories.user import UserRepo
 from schema_registry import validators
 
 

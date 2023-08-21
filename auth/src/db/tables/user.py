@@ -3,8 +3,8 @@ from uuid import uuid4
 
 from sqlalchemy import BigInteger, Column, Enum, String, Uuid
 
-from db.declarative import SCHEMA
-from db.tables import BaseModel
+from auth.src.db.declarative import SCHEMA
+from auth.src.db.tables import BaseModel
 
 
 class UserRole(str, enum.Enum):

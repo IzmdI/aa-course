@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel
 
-from db.tables import User, UserRole
+from auth.src.db.tables import User, UserRole
 
 
 class Action(str, Enum):

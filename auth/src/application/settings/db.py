@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     DB_HOST: str = "localhost"
     DB_NAME: str = "postgres"
     DB_PORT: int = 5432
+    DB_SCHEMA: str = "users"
 
     def get_db_url(self, async_mode: bool = True):
         return PostgresDsn.build(

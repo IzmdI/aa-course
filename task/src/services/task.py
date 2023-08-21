@@ -3,9 +3,9 @@ from random import randint
 from fastapi import HTTPException
 from starlette import status
 
-from application.settings.broker import Settings as Broker_settings
-from broker.producer import produce_event
-from broker.schemas import (
+from task.src.application.settings.broker import Settings as Broker_settings
+from task.src.broker.producer import produce_event
+from task.src.broker.schemas import (
     Action,
     EventDataTaskDone,
     EventDataTaskStreaming,
@@ -13,11 +13,11 @@ from broker.schemas import (
     TaskStreamingData,
     TaskDoneData,
 )
-from db.tables import TaskStatus, User
-from dto.schemas.request import CommonBaseQueryParamSchema, TaskFilterSchema
-from dto.task import TaskCreateDTO
-from repositories.task import TaskRepo
-from repositories.user import UserRepo
+from task.src.db.tables import TaskStatus, User
+from task.src.dto.schemas.request import CommonBaseQueryParamSchema, TaskFilterSchema
+from task.src.dto.task import TaskCreateDTO
+from task.src.repositories.task import TaskRepo
+from task.src.repositories.user import UserRepo
 from schema_registry import validators
 
 

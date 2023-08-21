@@ -18,11 +18,22 @@
           "format": "uuid",
           "title": "Public Id",
           "type": "string"
+        },
+        "assignee_id": {
+          "format": "uuid",
+          "title": "Assignee Id",
+          "type": "string"
+        },
+        "fee": {
+          "title": "Fee",
+          "type": "integer"
         }
       },
       "required": [
         "action",
-        "public_id"
+        "public_id",
+        "assignee_id",
+        "fee"
       ],
       "title": "TaskDoneData",
       "type": "object"
@@ -55,7 +66,10 @@
     }
   },
   "required": [
+    "event_id",
+    "event_version",
     "event_name",
+    "event_time",
     "event_producer",
     "event_data"
   ],

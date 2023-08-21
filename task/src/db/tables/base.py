@@ -2,7 +2,7 @@ import datetime
 
 from sqlalchemy import BigInteger, Boolean, Column, DateTime, func
 
-from db.declarative import Base
+from task.src.db.declarative import Base
 
 
 class BaseModel(Base):

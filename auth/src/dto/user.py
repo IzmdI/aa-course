@@ -1,8 +1,8 @@
 from typing import Optional
 from uuid import UUID
 
-from db.tables.user import UserRole
-from dto.base import BaseSchema, ORMBaseSchema
+from auth.src.db.tables.user import UserRole
+from auth.src.dto.base import BaseSchema, ORMBaseSchema
 
 
 class UserDTO(ORMBaseSchema):

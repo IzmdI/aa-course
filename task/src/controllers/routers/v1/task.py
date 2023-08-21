@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, Path
 
-from application.settings.broker import Settings as Broker_settings
-from controllers.dependencies import get_current_active_user, get_current_moderator_user
-from controllers.stub import Stub
-from db.tables import User
-from dto.schemas.request import CommonBaseQueryParamSchema, TaskFilterSchema
-from dto.task import TaskCreateDTO
-from services.task import TaskService
+from task.src.application.settings.broker import Settings as Broker_settings
+from task.src.controllers.dependencies import get_current_active_user, get_current_moderator_user
+from task.src.controllers.stub import Stub
+from task.src.db.tables import User
+from task.src.dto.schemas.request import CommonBaseQueryParamSchema, TaskFilterSchema
+from task.src.dto.task import TaskCreateDTO
+from task.src.services.task import TaskService
 
 router = APIRouter(tags=["tasks"], prefix="/tasks")
 

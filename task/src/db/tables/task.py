@@ -3,8 +3,8 @@ from uuid import uuid4
 
 from sqlalchemy import Column, Enum, Integer, String, Uuid
 
-from db.declarative import SCHEMA
-from db.tables import BaseModel
+from task.src.db.declarative import SCHEMA
+from task.src.db.tables import BaseModel
 
 
 class TaskStatus(str, enum.Enum):

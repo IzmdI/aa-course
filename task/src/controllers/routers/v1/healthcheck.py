@@ -6,7 +6,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from controllers.stub import Stub
+from task.src.controllers.stub import Stub
 
 router = APIRouter(tags=["healthcheck"])
 

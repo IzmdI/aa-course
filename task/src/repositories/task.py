@@ -3,11 +3,11 @@ from typing import Any, Sequence
 from sqlalchemy import Row, RowMapping, delete, func, select, update
 from sqlalchemy.exc import IntegrityError
 
-from db.tables import Task, TaskStatus
-from dto.schemas.request import CommonBaseQueryParamSchema
-from dto.task import TaskCreateDTO
-from repositories.const import SortingType
-from repositories.repo_base import BaseRepository
+from task.src.db.tables import Task, TaskStatus
+from task.src.dto.schemas.request import CommonBaseQueryParamSchema
+from task.src.dto.task import TaskCreateDTO
+from task.src.repositories.const import SortingType
+from task.src.repositories.repo_base import BaseRepository
 
 
 class TaskRepo(BaseRepository):

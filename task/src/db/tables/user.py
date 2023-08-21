@@ -2,8 +2,8 @@ import enum
 
 from sqlalchemy import Column, Enum, String, Uuid
 
-from db.declarative import SCHEMA
-from db.tables import BaseModel
+from task.src.db.declarative import SCHEMA
+from task.src.db.tables import BaseModel
 
 
 class UserRole(str, enum.Enum):

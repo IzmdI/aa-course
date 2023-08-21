@@ -2,17 +2,18 @@ import logging.config
 
 from fastapi import FastAPI
 from fastapi.security import OAuth2PasswordBearer
-from middleware.cors import get_cors_middleware
+
+from auth.src.middleware.cors import get_cors_middleware
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from application.settings.app import Settings as App_settings
-from application.settings.auth import Settings as Auth_settings
-from application.settings.broker import Settings as Broker_settings
-from application.settings.db import Settings as DB_settings
-from application.settings.logger import config, settings
-from controllers.dependencies import get_session, get_user_service, oauth2_scheme
-from controllers.routers.v1.routers import router
-from services.user import UserService
+from auth.src.application.settings.app import Settings as App_settings
+from auth.src.application.settings.auth import Settings as Auth_settings
+from auth.src.application.settings.broker import Settings as Broker_settings
+from auth.src.application.settings.db import Settings as DB_settings
+from auth.src.application.settings.logger import config, settings
+from auth.src.controllers.dependencies import get_session, get_user_service, oauth2_scheme
+from auth.src.controllers.routers.v1.routers import router
+from auth.src.services.user import UserService
 
 app_settings = App_settings()
 auth_settings = Auth_settings()
@@ -20,10 +21,11 @@ db_url = DB_settings().get_db_url()
 logger_settings = settings.Settings()
 broker_settings = Broker_settings()
 
+engine = create_async_engine(db_url)
+session = async_sessionmaker(engine, expire_on_commit=False)
+
 
 def setup_dependencies(app: FastAPI) -> None:
-    engine = create_async_engine(db_url)
-    session = async_sessionmaker(engine, expire_on_commit=False)
     app.dependency_overrides[async_sessionmaker] = lambda: session
     app.dependency_overrides[Auth_settings] = lambda: auth_settings
     app.dependency_overrides[Broker_settings] = lambda: broker_settings
