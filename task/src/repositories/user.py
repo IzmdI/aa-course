@@ -35,7 +35,7 @@ class UserRepo(BaseRepository):
         user = await self.session.execute(query)
         return user.scalar_one_or_none()
 
-    async def get_user_by_public_id(self, public_user_id: int) -> User | None:
+    async def get_user_by_public_id(self, public_user_id: UUID) -> User | None:
         query = select(User).filter_by(public_id=public_user_id)
         user = await self.session.execute(query)
         return user.scalar_one_or_none()

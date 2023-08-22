@@ -1,6 +1,7 @@
+from typing import Any, Sequence
 from uuid import UUID
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import Row, RowMapping, delete, select, update
 from sqlalchemy.exc import IntegrityError
 
 from billing.src.db.tables import User
@@ -19,12 +20,17 @@ class UserRepo(BaseRepository):
         user = await self.session.execute(query)
         return user.scalar_one_or_none()
 
+    async def get_users_with_positive_balance(self) -> list[User] | Sequence[Row | RowMapping | Any]:
+        query = select(User).filter(User.balance > 0)
+        user = await self.session.execute(query)
+        return user.scalars().all()
+
     async def get_user_by_id(self, user_id: int) -> User | None:
         query = select(User).filter_by(id=user_id)
         user = await self.session.execute(query)
         return user.scalar_one_or_none()
 
-    async def get_user_by_public_id(self, public_user_id: int) -> User | None:
+    async def get_user_by_public_id(self, public_user_id: UUID) -> User | None:
         query = select(User).filter_by(public_id=public_user_id)
         user = await self.session.execute(query)
         return user.scalar_one_or_none()

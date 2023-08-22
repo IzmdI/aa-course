@@ -16,3 +16,8 @@ format: clean isort black ## do autoflake, isort and black
 
 run_db: ## run database
 	docker-compose up -d
+
+run_migrations: ## run migrations
+	python -m auth.src.migrations.runner upgrade head
+	python -m task.src.migrations.runner upgrade head
+	python -m billing.src.migrations.runner upgrade head

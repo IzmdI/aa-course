@@ -1,6 +1,8 @@
+import datetime
+from typing import Any, Sequence
 from uuid import UUID
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import Date, Row, RowMapping, cast, delete, select, update
 from sqlalchemy.exc import IntegrityError
 
 from billing.src.db.tables import BillingTransaction
@@ -24,6 +26,15 @@ class BillingTransactionRepo(BaseRepository):
         transaction = await self.session.execute(query)
         return transaction.scalar_one_or_none()
 
+    async def get_transactions(
+        self, date: datetime.date | None = None, **kwargs
+    ) -> list[BillingTransaction] | Sequence[Row | RowMapping | Any]:
+        query = select(BillingTransaction).filter_by(**kwargs)
+        if date:
+            query = query.filter(cast(BillingTransaction.updated_at, Date) == date)
+        transactions = await self.session.execute(query)
+        return transactions.scalars().all()
+
     async def create_transaction(self, transaction_data: TransactionCreateDTO) -> BillingTransaction:
         transaction = BillingTransaction(**transaction_data.model_dump(exclude_none=True))
         unique_fields_exceptions = await self.validate_uniques(transaction)
@@ -32,6 +43,11 @@ class BillingTransactionRepo(BaseRepository):
         self.session.add(transaction)
         await self.session.flush([transaction])
         return transaction
+
+    async def bulk_create_transactions(self, transactions_data: list[TransactionCreateDTO]) -> None:
+        transactions = [BillingTransaction(**data.model_dump(exclude_none=True)) for data in transactions_data]
+        self.session.add_all(transactions)
+        await self.session.flush(transactions)
 
     # обновление транзакионных записей не предполагается
     # async def update_transaction(self, public_id: UUID, **kwargs) -> None:

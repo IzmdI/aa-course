@@ -35,7 +35,7 @@ async def get_tasks(
 @router.put("/{task_id}/done")
 async def update_task(
     task_id: int = Path(),
-    user: User = Depends(get_current_active_user),  # noqa
+    user: User = Depends(get_current_active_user),
     service: TaskService = Depends(Stub(TaskService)),
     broker_settings: Broker_settings = Depends(Stub(Broker_settings)),
 ):

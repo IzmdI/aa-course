@@ -60,9 +60,9 @@ def get_current_active_user(
     return user
 
 
-def get_current_moderator_user(
+def get_current_accountant_user(
     user: User = Depends(get_current_active_user),
 ) -> User:
-    if user.role not in (UserRole.ADMIN, UserRole.MODERATOR):
+    if user.role not in (UserRole.ADMIN, UserRole.ACCOUNTANT):
         raise HTTPException(status_code=400, detail="The user doesn't have enough privileges")
     return user

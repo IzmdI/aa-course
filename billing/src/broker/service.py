@@ -47,6 +47,7 @@ class BrokerBillingService:
         self.session = session
         self.transaction_repo = BillingTransactionRepo(session)
         self.billing_cycle_repo = BillingCycleRepo(session)
+        self.user_repo = UserRepo(session)
 
     async def __call__(self, msg: TaskStreamingData | TaskDoneData) -> None:
         match msg.action:
@@ -78,7 +79,16 @@ class BrokerBillingService:
             description=f"Task Assigned!\nTitle: {msg.title}\nDescription: {msg.description}",
             credit=msg.price,
         )
+        user = await self.user_repo.get_user_by_public_id(msg.assignee_id)
         await self.transaction_repo.create_transaction(transaction)
+        await self.user_repo.update_user(
+            public_id=user.public_id,
+            balance=user.balance - transaction.credit,
+        )
+        await self.billing_cycle_repo.update_cycle(
+            public_id=current_cycle.public_id,
+            total_income=current_cycle.total_income + transaction.credit,
+        )
 
     async def update(self, msg: TaskStreamingData | TaskDoneData) -> None:
         current_cycle = await self.get_current_billing_cycle()
@@ -91,8 +101,17 @@ class BrokerBillingService:
             credit=msg.price if isinstance(msg, TaskStreamingData) else 0,
             debit=msg.fee if isinstance(msg, TaskDoneData) else 0,
         )
+        user = await self.user_repo.get_user_by_public_id(msg.assignee_id)
         await self.transaction_repo.create_transaction(transaction)
+        await self.user_repo.update_user(
+            public_id=user.public_id,
+            balance=user.balance - transaction.credit + transaction.debit,
+        )
+        await self.billing_cycle_repo.update_cycle(
+            public_id=current_cycle.public_id,
+            total_income=current_cycle.total_income + transaction.credit - transaction.debit,
+        )
 
-    async def delete(self, msg: UserStreamingData) -> None:
+    async def delete(self, msg: TaskStreamingData) -> None:
         # TODO: подумать тут над логикой, что нужно делать (спросить у бизнеса)
         raise NotImplementedError

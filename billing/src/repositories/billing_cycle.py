@@ -1,7 +1,7 @@
 import datetime
 from uuid import UUID
 
-from sqlalchemy import delete, select, update
+from sqlalchemy import Date, cast, delete, desc, select, update
 from sqlalchemy.exc import IntegrityError
 
 from billing.src.db.tables import BillingCycle
@@ -19,15 +19,22 @@ class BillingCycleRepo(BaseRepository):
         cycle = await self.session.execute(query)
         return cycle.scalar_one_or_none()
 
+    async def get_cycle(self, date: datetime.date | None = None, **kwargs) -> BillingCycle | None:
+        query = select(BillingCycle).filter_by(**kwargs).order_by(desc(BillingCycle.updated_at))
+        if date:
+            query = query.filter(cast(BillingCycle.updated_at, Date) == date)
+        cycle = await self.session.execute(query)
+        return cycle.scalar_one_or_none()
+
     async def get_cycle_by_public_id(self, public_id: int) -> BillingCycle | None:
         query = select(BillingCycle).filter_by(public_id=public_id)
         cycle = await self.session.execute(query)
         return cycle.scalar_one_or_none()
 
     async def get_current_billing_cycle(self) -> BillingCycle | None:
-        query = select(BillingCycle).filter_by(date=datetime.date.today())
+        query = select(BillingCycle).filter_by(is_active=True).order_by(desc(BillingCycle.updated_at))
         cycle = await self.session.execute(query)
-        return cycle.scalar_one_or_none()
+        return cycle.scalars().first()
 
     async def create_cycle(self) -> BillingCycle:
         cycle = BillingCycle()

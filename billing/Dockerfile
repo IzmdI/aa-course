@@ -11,6 +11,10 @@ COPY ../poetry.lock pyproject.toml ./
 
 RUN apk add --no-cache gcc build-base libffi-dev musl-dev postgresql-dev
 
-RUN yes | pip install --no-cache-dir "poetry==$POETRY_VERSION" && poetry config virtualenvs.create false && poetry install --only main --no-interaction --no-ansi
+RUN yes | pip install --no-cache-dir "poetry==$POETRY_VERSION" &&\
+     poetry config virtualenvs.create false &&\
+     poetry install --only main --no-interaction --no-ansi
 
 COPY ./src .
+
+ENTRYPOINT ["/opt/src/entrypoint.sh"]
