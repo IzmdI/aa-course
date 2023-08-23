@@ -5,18 +5,29 @@ from starlette import status
 
 from application.settings.broker import Settings as Broker_settings
 from broker.producer import produce_event
-from broker.schemas import Action, ProducerEvent, TaskMessage
+from broker.schemas import (
+    Action,
+    EventDataTaskDone,
+    EventDataTaskStreaming,
+    ProducerEvent,
+    TaskStreamingData,
+    TaskDoneData,
+)
 from db.tables import TaskStatus, User
 from dto.schemas.request import CommonBaseQueryParamSchema, TaskFilterSchema
 from dto.task import TaskCreateDTO
 from repositories.task import TaskRepo
 from repositories.user import UserRepo
+from schema_registry import validators
 
 
 class TaskService:
     def __init__(self, task_repo: TaskRepo, user_repo: UserRepo):
         self.task_repo = task_repo
         self.user_repo = user_repo
+        # TODO: использовать фабрику или ещё что-то получше
+        self.streaming_validator = validators.TaskStreamingSchemaValidator()
+        self.done_validator = validators.TaskDoneSchemaValidator()
 
     async def get_tasks(self, filters: TaskFilterSchema, common_params: CommonBaseQueryParamSchema, assignee: User):
         if filters.task_id:
@@ -37,11 +48,16 @@ class TaskService:
         task_data.status = TaskStatus.ASSIGNED
         task = await self.task_repo.create_task(task_data)
         await self.task_repo.session.commit()
-        event = ProducerEvent(
-            topic=broker_settings.TOPIC_TASK_STREAM,
-            value=TaskMessage.from_model(task, action=Action.CREATE),
+        message = EventDataTaskStreaming(
+            event_name="Task Created",
+            event_producer="Task Service",
+            event_version=1,
+            event_data=TaskStreamingData.from_model(task, action=Action.CREATE),
         )
-        await produce_event(event, broker_settings)
+        if self.streaming_validator.is_valid(message.model_dump(mode="json")):
+            event = ProducerEvent(topic=broker_settings.TOPIC_TASK_STREAM, value=message.model_dump())
+            await produce_event(event, broker_settings)
+            # TODO: добавить флоу по невалидной дате
 
     async def done_task(self, task_id: int, user: User, broker_settings: Broker_settings) -> None:
         task = await self.task_repo.get_task_by_id(task_id, by_undone_status=True)
@@ -53,11 +69,16 @@ class TaskService:
         await self.task_repo.session.commit()
         self.task_repo.session.expunge(task)
         task = await self.task_repo.get_task_by_id(task_id)
-        event = ProducerEvent(
-            topic=broker_settings.TOPIC_TASK_DONE,
-            value=TaskMessage.from_model(task, action=Action.UPDATE),
+        message = EventDataTaskDone(
+            event_name="Task Done",
+            event_producer="Task Service",
+            event_version=1,
+            event_data=TaskDoneData.from_model(task, action=Action.UPDATE),
         )
-        await produce_event(event, broker_settings)
+        if self.done_validator.is_valid(message.model_dump(mode="json")):
+            event = ProducerEvent(topic=broker_settings.TOPIC_TASK_DONE, value=message.model_dump())
+            await produce_event(event, broker_settings)
+            # TODO: добавить флоу по невалидной дате
 
     async def refresh_tasks(self, broker_settings: Broker_settings) -> None:
         random_users = await self.user_repo.get_random_users()
@@ -69,11 +90,16 @@ class TaskService:
         self.task_repo.session.expunge_all()
         random_tasks = await self.task_repo.get_undone_tasks()
         for task in random_tasks:
-            event = ProducerEvent(
-                topic=broker_settings.TOPIC_TASK_STREAM,
-                value=TaskMessage.from_model(task, action=Action.UPDATE),
+            message = EventDataTaskStreaming(
+                event_name="Task Assigned",
+                event_producer="Task Service",
+                event_version=1,
+                event_data=TaskStreamingData.from_model(task, action=Action.UPDATE),
             )
-            await produce_event(event, broker_settings)
+            if self.streaming_validator.is_valid(message.model_dump(mode="json")):
+                event = ProducerEvent(topic=broker_settings.TOPIC_TASK_STREAM, value=message.model_dump())
+                await produce_event(event, broker_settings)
+                # TODO: добавить флоу по невалидной дате
 
     async def delete_task(self, task_id: int, broker_settings: Broker_settings) -> None:
         task = await self.task_repo.get_task_by_id(task_id)
@@ -81,8 +107,13 @@ class TaskService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
         await self.task_repo.delete_task(task_id)
         await self.task_repo.session.commit()
-        event = ProducerEvent(
-            topic=broker_settings.TOPIC_TASK_STREAM,
-            value=TaskMessage.from_model(task, action=Action.DELETE),
+        message = EventDataTaskStreaming(
+            event_name="Task Deleted",
+            event_producer="Task Service",
+            event_version=1,
+            event_data=TaskStreamingData.from_model(task, action=Action.DELETE),
         )
-        await produce_event(event, broker_settings)
+        if self.streaming_validator.is_valid(message.model_dump(mode="json")):
+            event = ProducerEvent(topic=broker_settings.TOPIC_TASK_STREAM, value=message.model_dump())
+            await produce_event(event, broker_settings)
+            # TODO: добавить флоу по невалидной дате

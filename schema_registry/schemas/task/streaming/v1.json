@@ -1,0 +1,115 @@
+{
+  "$defs": {
+    "Action": {
+      "enum": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "TaskStatus": {
+      "enum": [
+        "new",
+        "assigned",
+        "done"
+      ],
+      "title": "TaskStatus",
+      "type": "string"
+    },
+    "TaskStreamingData": {
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/Action"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "public_id": {
+          "format": "uuid",
+          "title": "Public Id",
+          "type": "string"
+        },
+        "price": {
+          "title": "Price",
+          "type": "integer"
+        },
+        "fee": {
+          "title": "Fee",
+          "type": "integer"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Description"
+        },
+        "owner_id": {
+          "format": "uuid",
+          "title": "Owner Id",
+          "type": "string"
+        },
+        "assignee_id": {
+          "format": "uuid",
+          "title": "Assignee Id",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/TaskStatus"
+        }
+      },
+      "required": [
+        "action",
+        "title",
+        "public_id",
+        "price",
+        "fee",
+        "owner_id",
+        "assignee_id",
+        "status"
+      ],
+      "title": "TaskStreamingData",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "event_version": {
+      "title": "Event Version",
+      "type": "integer"
+    },
+    "event_name": {
+      "title": "Event Name",
+      "type": "string"
+    },
+    "event_time": {
+      "title": "Event Time",
+      "type": "string"
+    },
+    "event_producer": {
+      "title": "Event Producer",
+      "type": "string"
+    },
+    "event_data": {
+      "$ref": "#/$defs/TaskStreamingData"
+    }
+  },
+  "required": [
+    "event_name",
+    "event_producer",
+    "event_data"
+  ],
+  "title": "EventDataTaskStreaming",
+  "type": "object"
+}

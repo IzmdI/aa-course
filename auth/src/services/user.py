@@ -10,11 +10,11 @@ from application.settings.broker import Settings as Broker_settings
 from broker.producer import produce_event
 from broker.schemas import (
     Action,
-    EventMetadata,
-    UserStreamingMessage,
-    UserRoleMessage,
-    EventUserStreaming,
-    EventUserRole,
+    EventDataUserRole,
+    EventDataUserStreaming,
+    ProducerEvent,
+    UserRoleData,
+    UserStreamingData,
 )
 from db.tables import User, UserRole
 from dto.user import UserCreateDTO, UserUpdateDTO
@@ -29,7 +29,6 @@ class UserService:
         # TODO: использовать фабрику или ещё что-то получше
         self.streaming_validator = validators.UserStreamingSchemaValidator()
         self.role_validator = validators.UserRoleSchemaValidator()
-        self.event_metadata_validator = validators.EventMetadataSchemaValidator()
 
     def decode_token(self, token: str, auth_settings: Auth_settings = Auth_settings()) -> str:
         credentials_exception = HTTPException(
@@ -90,18 +89,15 @@ class UserService:
         user_data.password = self.get_password_hash(user_data.password)
         user = await self.user_repo.create_user(user_data)
         await self.user_repo.session.commit()
-        event = EventUserStreaming(
-            topic=broker_settings.TOPIC_USER_STREAM,
-            value=UserStreamingMessage.from_model(user, action=Action.CREATE),
+        message = EventDataUserStreaming(
+            event_name="User Created",
+            event_producer="Auth Service",
+            event_version=1,
+            event_data=UserStreamingData.from_model(user, action=Action.CREATE),
         )
-        event_metadata = EventMetadata(event_name="User Created", event_producer="Auth Service", event_version=1)
-        if all(
-            [
-                self.streaming_validator.is_valid(event.model_dump(mode="json")),
-                self.event_metadata_validator.is_valid(event_metadata.model_dump(mode="json")),
-            ]
-        ):
-            await produce_event(event, event_metadata, broker_settings)
+        if self.streaming_validator.is_valid(message.model_dump(mode="json")):
+            event = ProducerEvent(topic=broker_settings.TOPIC_USER_STREAM, value=message.model_dump())
+            await produce_event(event, broker_settings)
             # TODO: добавить флоу по невалидной дате
 
     async def update_user(
@@ -130,21 +126,26 @@ class UserService:
         self.user_repo.session.expunge(user)
         user = await self.user_repo.get_user_by_id(user_id)
         if user_data.role:
-            event = EventUserRole(
-                topic=broker_settings.TOPIC_USER_ROLE, value=UserRoleMessage.from_model(user, action=Action.UPDATE)
+            message = EventDataUserRole(
+                event_name="User Role Changed",
+                event_producer="Auth Service",
+                event_version=1,
+                event_data=UserRoleData.from_model(user, action=Action.UPDATE),
             )
-            event_name = "User Role Changed"
-            check = self.role_validator.is_valid(event.model_dump(mode="json"))
+            topic = broker_settings.TOPIC_USER_ROLE
+            is_valid = self.role_validator.is_valid(message.model_dump(mode="json"))
         else:
-            event = EventUserStreaming(
-                topic=broker_settings.TOPIC_USER_STREAM,
-                value=UserStreamingMessage.from_model(user, action=Action.UPDATE),
+            message = EventDataUserStreaming(
+                event_name="User Created",
+                event_producer="Auth Service",
+                event_version=1,
+                event_data=UserStreamingData.from_model(user, action=Action.CREATE),
             )
-            event_name = "User Updated"
-            check = self.streaming_validator.is_valid(event.json())
-        event_metadata = EventMetadata(event_name=event_name, event_producer="Auth Service", event_version=1)
-        if all([check, self.event_metadata_validator.is_valid(event_metadata.model_dump(mode="json"))]):
-            await produce_event(event, event_metadata, broker_settings)
+            topic = broker_settings.TOPIC_USER_STREAM
+            is_valid = self.streaming_validator.is_valid(message.model_dump(mode="json"))
+        if is_valid:
+            event = ProducerEvent(topic=topic, value=message.model_dump())
+            await produce_event(event, broker_settings)
             # TODO: добавить флоу по невалидной дате
 
     async def delete_user(self, token: str, user_id: int, broker_settings: Broker_settings) -> None:
@@ -163,16 +164,13 @@ class UserService:
             )
         await self.user_repo.delete_user(user_id)
         await self.user_repo.session.commit()
-        event = EventUserStreaming(
-            topic=broker_settings.TOPIC_USER_STREAM,
-            value=UserStreamingMessage.from_model(user, action=Action.DELETE),
+        message = EventDataUserStreaming(
+            event_name="User Deleted",
+            event_producer="Auth Service",
+            event_version=1,
+            event_data=UserStreamingData.from_model(user, action=Action.DELETE),
         )
-        event_metadata = EventMetadata(event_name="User Deleted", event_producer="Auth Service", event_version=1)
-        if all(
-            [
-                self.streaming_validator.is_valid(event.model_dump(mode="json")),
-                self.event_metadata_validator.is_valid(event_metadata.model_dump(mode="json")),
-            ]
-        ):
-            await produce_event(event, event_metadata, broker_settings)
+        if self.streaming_validator.is_valid(message.model_dump(mode="json")):
+            event = ProducerEvent(topic=broker_settings.TOPIC_USER_STREAM, value=message.model_dump())
+            await produce_event(event, broker_settings)
             # TODO: добавить флоу по невалидной дате
