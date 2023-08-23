@@ -21,7 +21,7 @@ from schema_registry import validators
 user_role_validator = validators.UserRoleSchemaValidator()
 user_streaming_validator = validators.UserStreamingSchemaValidator()
 task_done_validator = validators.TaskDoneSchemaValidator()
-task_streaming_validator = validators.TaskStreamingSchemaValidator()
+task_streaming_validator_v2 = validators.TaskStreamingSchemaValidator(version=2)
 
 
 def key_deserializer(obj: bytes) -> UUID | str:
@@ -79,7 +79,7 @@ async def consume_tasks(broker_settings: Broker_settings) -> None:
         async for msg in consumer:
             match msg.topic:
                 case broker_settings.TOPIC_TASK_STREAM:
-                    validator = task_streaming_validator
+                    validator = task_streaming_validator_v2
                     event = EventDataTaskStreaming
                 case broker_settings.TOPIC_TASK_DONE:
                     validator = task_done_validator
@@ -110,4 +110,7 @@ if __name__ == "__main__":
     else:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-    asyncio.run(consume())
+    try:
+        asyncio.run(consume())
+    except (RuntimeError, SystemExit, KeyboardInterrupt):
+        pass

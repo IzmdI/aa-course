@@ -5,7 +5,7 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel
 
-from task.src.db.tables import Task, TaskStatus, User, UserRole
+from task.src.db.tables import Task, User, UserRole
 
 
 class Action(str, Enum):
@@ -70,6 +70,7 @@ class EventDataUserRole(EventData):
 class TaskStreamingData(BaseModel):
     action: Action
     title: str
+    jira_id: Optional[str] = None
     public_id: UUID
     price: int
     description: Optional[str] = None
@@ -80,6 +81,7 @@ class TaskStreamingData(BaseModel):
         return cls(
             action=action,
             title=model.title,
+            jira_id=model.jira_id,
             public_id=model.public_id,
             price=model.price,
             description=model.description,

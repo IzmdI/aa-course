@@ -17,6 +17,7 @@ class Task(BaseModel):
     __tablename__ = "tasks"
 
     title = Column(String(320), nullable=False)
+    jira_id = Column(String(320), nullable=True)
     public_id = Column(Uuid, nullable=False, unique=True, default=uuid4)
     price = Column(Integer, nullable=False)
     fee = Column(Integer, nullable=False)

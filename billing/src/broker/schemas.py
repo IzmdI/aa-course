@@ -60,6 +60,7 @@ class EventDataUserRole(EventData):
 class TaskStreamingData(BaseModel):
     action: Action
     title: str
+    jira_id: Optional[str] = None
     public_id: UUID
     price: int
     description: Optional[str] = None

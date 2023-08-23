@@ -67,4 +67,7 @@ if __name__ == "__main__":
     else:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-    asyncio.run(consume_users(broker_settings))
+    try:
+        asyncio.run(consume_users(broker_settings))
+    except (RuntimeError, SystemExit, KeyboardInterrupt):
+        pass
