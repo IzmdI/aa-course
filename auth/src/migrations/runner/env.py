@@ -3,8 +3,8 @@ import os
 from alembic import context
 from sqlalchemy import create_engine, pool, text
 
-from db.declarative import SCHEMA
-from db.tables.base import BaseModel
+from auth.src.db.declarative import SCHEMA
+from auth.src.db.tables.base import BaseModel
 
 config = context.config
 

@@ -2,9 +2,9 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    ALEMBIC_SCRIPT_LOCATION: str = 'migrations:runner'
+    ALEMBIC_SCRIPT_LOCATION: str = 'auth.src.migrations:runner'
 
-    ALEMBIC_VERSION_LOCATIONS: str = 'migrations:versions'
+    ALEMBIC_VERSION_LOCATIONS: str = 'auth.src.migrations:versions'
 
     ALEMBIC_MIGRATION_FILENAME_TEMPLATE: str = (
         '%%(year)d_'

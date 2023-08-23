@@ -8,8 +8,8 @@ from uuid import UUID
 from aiokafka import AIOKafkaProducer
 from aiokafka.errors import KafkaTimeoutError
 
-from application.settings.broker import Settings as Broker_settings
-from broker.schemas import ProducerEvent
+from auth.src.application.settings.broker import Settings as Broker_settings
+from auth.src.broker.schemas import ProducerEvent
 
 
 def recursive_serializer(obj: Any) -> Any:
@@ -40,6 +40,7 @@ async def produce_event(
         value_serializer=serializer,
         key_serializer=serializer,
         enable_idempotence=True,
+        acks="all",
     )
     await producer.start()
     step = 1

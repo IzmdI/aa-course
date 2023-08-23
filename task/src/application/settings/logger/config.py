@@ -1,4 +1,4 @@
-from application.settings.logger.settings import Settings
+from task.src.application.settings.logger.settings import Settings
 
 
 def make_logger_conf(

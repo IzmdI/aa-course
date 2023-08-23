@@ -9,15 +9,6 @@
       "title": "Action",
       "type": "string"
     },
-    "TaskStatus": {
-      "enum": [
-        "new",
-        "assigned",
-        "done"
-      ],
-      "title": "TaskStatus",
-      "type": "string"
-    },
     "TaskStreamingData": {
       "properties": {
         "action": {
@@ -36,10 +27,6 @@
           "title": "Price",
           "type": "integer"
         },
-        "fee": {
-          "title": "Fee",
-          "type": "integer"
-        },
         "description": {
           "anyOf": [
             {
@@ -51,18 +38,10 @@
           ],
           "title": "Description"
         },
-        "owner_id": {
-          "format": "uuid",
-          "title": "Owner Id",
-          "type": "string"
-        },
         "assignee_id": {
           "format": "uuid",
           "title": "Assignee Id",
           "type": "string"
-        },
-        "status": {
-          "$ref": "#/$defs/TaskStatus"
         }
       },
       "required": [
@@ -70,10 +49,7 @@
         "title",
         "public_id",
         "price",
-        "fee",
-        "owner_id",
-        "assignee_id",
-        "status"
+        "assignee_id"
       ],
       "title": "TaskStreamingData",
       "type": "object"
@@ -106,7 +82,10 @@
     }
   },
   "required": [
+    "event_id",
+    "event_version",
     "event_name",
+    "event_time",
     "event_producer",
     "event_data"
   ],

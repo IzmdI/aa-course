@@ -3,13 +3,13 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Path
 from fastapi.security import OAuth2PasswordRequestForm
 
-from application.settings.auth import Settings as Auth_settings
-from application.settings.broker import Settings as Broker_settings
-from controllers.dependencies import get_current_active_user, oauth2_scheme
-from controllers.stub import Stub
-from db.tables import User
-from dto.user import Token, UserCreateDTO, UserDTO, UserUpdateDTO
-from services.user import UserService
+from auth.src.application.settings.auth import Settings as Auth_settings
+from auth.src.application.settings.broker import Settings as Broker_settings
+from auth.src.controllers.dependencies import get_current_active_user, oauth2_scheme
+from auth.src.controllers.stub import Stub
+from auth.src.db.tables import User
+from auth.src.dto.user import Token, UserCreateDTO, UserDTO, UserUpdateDTO
+from auth.src.services.user import UserService
 
 router = APIRouter(tags=["auth"])
 

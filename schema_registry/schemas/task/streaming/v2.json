@@ -1,0 +1,105 @@
+{
+  "$defs": {
+    "Action": {
+      "enum": [
+        "create",
+        "update",
+        "delete"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "TaskStreamingData": {
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/Action"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "jira_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Jira Id"
+        },
+        "public_id": {
+          "format": "uuid",
+          "title": "Public Id",
+          "type": "string"
+        },
+        "price": {
+          "title": "Price",
+          "type": "integer"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Description"
+        },
+        "assignee_id": {
+          "format": "uuid",
+          "title": "Assignee Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action",
+        "title",
+        "public_id",
+        "price",
+        "assignee_id"
+      ],
+      "title": "TaskStreamingData",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "event_version": {
+      "title": "Event Version",
+      "type": "integer"
+    },
+    "event_name": {
+      "title": "Event Name",
+      "type": "string"
+    },
+    "event_time": {
+      "title": "Event Time",
+      "type": "string"
+    },
+    "event_producer": {
+      "title": "Event Producer",
+      "type": "string"
+    },
+    "event_data": {
+      "$ref": "#/$defs/TaskStreamingData"
+    }
+  },
+  "required": [
+    "event_id",
+    "event_version",
+    "event_name",
+    "event_time",
+    "event_producer",
+    "event_data"
+  ],
+  "title": "EventDataTaskStreaming",
+  "type": "object"
+}

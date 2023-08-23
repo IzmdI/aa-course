@@ -1,8 +1,8 @@
 from typing import Optional
 from uuid import UUID
 
-from db.tables import UserRole
-from dto.base import BaseSchema
+from task.src.db.tables import UserRole
+from task.src.dto.base import BaseSchema
 
 
 class TokenPayload(BaseSchema):

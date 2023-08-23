@@ -2,9 +2,9 @@ import logging.config
 
 from alembic.config import CommandLine, Config
 
-from migrations.runner.config import Settings as alembic_settings
-from application.settings.db import Settings as db_settings
-from application.settings.logger.config import make_logger_conf
+from auth.src.migrations.runner.config import Settings as alembic_settings
+from auth.src.application.settings.db import Settings as db_settings
+from auth.src.application.settings.logger.config import make_logger_conf
 
 db_settings = db_settings()
 alembic_settings = alembic_settings()

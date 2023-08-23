@@ -1,12 +1,13 @@
 from typing import Optional
 from uuid import UUID
 
-from db.tables import TaskStatus
-from dto.base import BaseSchema, ORMBaseSchema
+from task.src.db.tables import TaskStatus
+from task.src.dto.base import BaseSchema, ORMBaseSchema
 
 
 class TaskDTO(ORMBaseSchema):
     title: str
+    jira_id: Optional[str] = None
     public_id: UUID
     price: int
     fee: int
@@ -18,6 +19,7 @@ class TaskDTO(ORMBaseSchema):
 
 class TaskCreateDTO(BaseSchema):
     title: str
+    jira_id: Optional[str] = None
     price: Optional[int] = None
     fee: Optional[int] = None
     description: Optional[str] = None

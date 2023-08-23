@@ -1,8 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from broker.schemas import Action, UserStreamingData, UserRoleData
-from dto.user import UserCreateDTO, UserUpdateDTO
-from repositories.user import UserRepo
+from task.src.broker.schemas import Action, UserStreamingData, UserRoleData
+from task.src.dto.user import UserCreateDTO, UserUpdateDTO
+from task.src.repositories.user import UserRepo
 
 
 class BrokerUserService:

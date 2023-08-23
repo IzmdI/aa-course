@@ -3,7 +3,7 @@ from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.tables.base import BaseModel
+from auth.src.db.tables.base import BaseModel
 
 
 class BaseRepository(ABC):

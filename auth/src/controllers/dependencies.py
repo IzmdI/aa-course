@@ -7,12 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from starlette import status
 from typing_extensions import AsyncGenerator
 
-from application.settings.auth import Settings as Auth_settings
-from controllers.stub import Stub
-from db.tables import User, UserRole
-from dto.user import TokenPayload
-from repositories.user import UserRepo
-from services.user import UserService
+from auth.src.application.settings.auth import Settings as Auth_settings
+from auth.src.controllers.stub import Stub
+from auth.src.db.tables import User, UserRole
+from auth.src.dto.user import TokenPayload
+from auth.src.repositories.user import UserRepo
+from auth.src.services.user import UserService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/token")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

@@ -1,8 +1,8 @@
 from typing import Optional
 from uuid import UUID
 
-from db.tables.user import UserRole
-from dto.base import BaseSchema, ORMBaseSchema
+from auth.src.db.tables.user import UserRole
+from auth.src.dto.base import BaseSchema, ORMBaseSchema
 
 
 class UserDTO(ORMBaseSchema):
@@ -10,7 +10,6 @@ class UserDTO(ORMBaseSchema):
     username: str
     email: Optional[str] = None
     role: Optional[UserRole] = None
-    bill: Optional[int] = None
 
 
 class UserCreateDTO(BaseSchema):
@@ -18,7 +17,6 @@ class UserCreateDTO(BaseSchema):
     password: str
     email: str
     role: Optional[UserRole] = UserRole.WORKER
-    bill: int
 
 
 class UserUpdateDTO(BaseSchema):
@@ -26,7 +24,6 @@ class UserUpdateDTO(BaseSchema):
     password: Optional[str] = None
     email: Optional[str] = None
     role: Optional[UserRole] = None
-    bill: Optional[int] = None
     is_active: Optional[bool] = None
 
 

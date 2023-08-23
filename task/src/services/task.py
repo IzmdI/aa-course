@@ -3,9 +3,9 @@ from random import randint
 from fastapi import HTTPException
 from starlette import status
 
-from application.settings.broker import Settings as Broker_settings
-from broker.producer import produce_event
-from broker.schemas import (
+from task.src.application.settings.broker import Settings as Broker_settings
+from task.src.broker.producer import produce_event
+from task.src.broker.schemas import (
     Action,
     EventDataTaskDone,
     EventDataTaskStreaming,
@@ -13,11 +13,11 @@ from broker.schemas import (
     TaskStreamingData,
     TaskDoneData,
 )
-from db.tables import TaskStatus, User
-from dto.schemas.request import CommonBaseQueryParamSchema, TaskFilterSchema
-from dto.task import TaskCreateDTO
-from repositories.task import TaskRepo
-from repositories.user import UserRepo
+from task.src.db.tables import TaskStatus, User
+from task.src.dto.schemas.request import CommonBaseQueryParamSchema, TaskFilterSchema
+from task.src.dto.task import TaskCreateDTO
+from task.src.repositories.task import TaskRepo
+from task.src.repositories.user import UserRepo
 from schema_registry import validators
 
 
@@ -27,6 +27,7 @@ class TaskService:
         self.user_repo = user_repo
         # TODO: использовать фабрику или ещё что-то получше
         self.streaming_validator = validators.TaskStreamingSchemaValidator()
+        self.streaming_validator_v2 = validators.TaskStreamingSchemaValidator(version=2)
         self.done_validator = validators.TaskDoneSchemaValidator()
 
     async def get_tasks(self, filters: TaskFilterSchema, common_params: CommonBaseQueryParamSchema, assignee: User):
@@ -46,15 +47,23 @@ class TaskService:
         task_data.price = randint(10, 20)
         task_data.fee = randint(20, 40)
         task_data.status = TaskStatus.ASSIGNED
+        title = task_data.title
+        if title.startswith("["):
+            try:
+                title, jira_id = title[1:].split("]")
+            except ValueError:
+                title, jira_id = title, None
+            task_data.title = title
+            task_data.jira_id = jira_id
         task = await self.task_repo.create_task(task_data)
         await self.task_repo.session.commit()
         message = EventDataTaskStreaming(
             event_name="Task Created",
             event_producer="Task Service",
-            event_version=1,
+            event_version=2,
             event_data=TaskStreamingData.from_model(task, action=Action.CREATE),
         )
-        if self.streaming_validator.is_valid(message.model_dump(mode="json")):
+        if self.streaming_validator_v2.is_valid(message.model_dump(mode="json")):
             event = ProducerEvent(topic=broker_settings.TOPIC_TASK_STREAM, value=message.model_dump())
             await produce_event(event, broker_settings)
             # TODO: добавить флоу по невалидной дате
@@ -93,10 +102,10 @@ class TaskService:
             message = EventDataTaskStreaming(
                 event_name="Task Assigned",
                 event_producer="Task Service",
-                event_version=1,
+                event_version=2,
                 event_data=TaskStreamingData.from_model(task, action=Action.UPDATE),
             )
-            if self.streaming_validator.is_valid(message.model_dump(mode="json")):
+            if self.streaming_validator_v2.is_valid(message.model_dump(mode="json")):
                 event = ProducerEvent(topic=broker_settings.TOPIC_TASK_STREAM, value=message.model_dump())
                 await produce_event(event, broker_settings)
                 # TODO: добавить флоу по невалидной дате
@@ -110,10 +119,10 @@ class TaskService:
         message = EventDataTaskStreaming(
             event_name="Task Deleted",
             event_producer="Task Service",
-            event_version=1,
+            event_version=2,
             event_data=TaskStreamingData.from_model(task, action=Action.DELETE),
         )
-        if self.streaming_validator.is_valid(message.model_dump(mode="json")):
+        if self.streaming_validator_v2.is_valid(message.model_dump(mode="json")):
             event = ProducerEvent(topic=broker_settings.TOPIC_TASK_STREAM, value=message.model_dump())
             await produce_event(event, broker_settings)
             # TODO: добавить флоу по невалидной дате

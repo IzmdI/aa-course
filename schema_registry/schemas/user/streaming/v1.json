@@ -60,6 +60,17 @@
             }
           ],
           "title": "Email"
+        },
+        "balance": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Balance"
         }
       },
       "required": [

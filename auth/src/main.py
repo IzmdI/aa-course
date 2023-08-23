@@ -1,6 +1,6 @@
 import uvicorn
 
-from application.app import app_settings, init_app
+from auth.src.application.app import app_settings, init_app
 
 app = init_app()
 

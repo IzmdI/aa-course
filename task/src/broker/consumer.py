@@ -6,10 +6,10 @@ from uuid import UUID
 
 from aiokafka import AIOKafkaConsumer
 
-from application.settings.broker import Settings as Broker_settings
-from broker.dependencies import broker_settings, get_user_broker_service
-from broker.service import BrokerUserService
-from broker.schemas import (
+from task.src.application.settings.broker import Settings as Broker_settings
+from task.src.broker.dependencies import broker_settings, get_user_broker_service
+from task.src.broker.service import BrokerUserService
+from task.src.broker.schemas import (
     EventDataUserRole,
     EventDataUserStreaming,
 )
@@ -67,4 +67,7 @@ if __name__ == "__main__":
     else:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-    asyncio.run(consume_users(broker_settings))
+    try:
+        asyncio.run(consume_users(broker_settings))
+    except (RuntimeError, SystemExit, KeyboardInterrupt):
+        pass
