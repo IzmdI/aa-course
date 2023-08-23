@@ -41,6 +41,7 @@ class UserStreamingData(BaseModel):
     username: Optional[str] = None
     role: Optional[UserRole] = None
     email: Optional[str] = None
+    balance: Optional[int] = None
 
 
 class UserRoleData(BaseModel):

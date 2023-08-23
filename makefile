@@ -21,3 +21,4 @@ run_migrations: ## run migrations
 	python -m auth.src.migrations.runner upgrade head
 	python -m task.src.migrations.runner upgrade head
 	python -m billing.src.migrations.runner upgrade head
+	python -m analytics.src.migrations.runner upgrade head

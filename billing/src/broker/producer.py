@@ -40,6 +40,7 @@ async def produce_event(
         value_serializer=serializer,
         key_serializer=serializer,
         enable_idempotence=True,
+        acks="all",
     )
     await producer.start()
     step = 1

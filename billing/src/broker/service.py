@@ -1,18 +1,29 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from billing.src.broker.schemas import Action, TaskDoneData, TaskStreamingData, UserStreamingData, UserRoleData
+from schema_registry import validators
+from billing.src.broker.schemas import (
+    Action,
+    EventDataUserStreaming,
+    ProducerEvent, TaskDoneData,
+    TaskStreamingData,
+    UserStreamingData,
+    UserRoleData,
+)
 from billing.src.dto.user import UserCreateDTO, UserUpdateDTO
 from billing.src.repositories.user import UserRepo
 from billing.src.repositories.billing_transaction import BillingTransactionRepo
 from billing.src.repositories.billing_cycle import BillingCycleRepo
 from billing.src.db.tables import BillingCycle
 from billing.src.dto.billing import TransactionCreateDTO
+from billing.src.broker.dependencies import broker_settings
+from billing.src.broker.producer import produce_event
 
 
 class BrokerUserService:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
         self.user_repo = UserRepo(session)
+        self.user_streaming_validator = validators.UserStreamingSchemaValidator()
 
     async def __call__(self, msg: UserStreamingData | UserRoleData) -> None:
         match msg.action:
@@ -36,6 +47,19 @@ class BrokerUserService:
     async def update(self, msg: UserStreamingData | UserRoleData) -> None:
         user_data = UserUpdateDTO(**msg.model_dump())
         await self.user_repo.update_user(**user_data.model_dump(exclude_none=True))
+        self.user_repo.session.expunge_all()
+        user = await self.user_repo.get_user_by_public_id(user_data.public_id)
+        message = EventDataUserStreaming(
+            event_name="User Balance Updated",
+            event_producer="Billing Service",
+            event_version=1,
+            event_data=UserStreamingData.from_model(user, action=Action.UPDATE),
+        )
+        topic = broker_settings.TOPIC_USER_STREAM
+        if self.user_streaming_validator.is_valid(message.model_dump(mode="json")):
+            event = ProducerEvent(topic=topic, value=message.model_dump())
+            await produce_event(event, broker_settings)
+            # TODO: добавить флоу по невалидной дате
 
     async def delete(self, msg: UserStreamingData) -> None:
         user_public_id = msg.public_id

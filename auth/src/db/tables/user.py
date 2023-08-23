@@ -1,7 +1,7 @@
 import enum
 from uuid import uuid4
 
-from sqlalchemy import BigInteger, Column, Enum, String, Uuid
+from sqlalchemy import Column, Enum, String, Uuid
 
 from auth.src.db.declarative import SCHEMA
 from auth.src.db.tables import BaseModel
@@ -22,4 +22,3 @@ class User(BaseModel):
     password = Column(String(255), nullable=False, unique=True)
     email = Column(String(255), nullable=False, unique=True)
     role = Column(Enum(UserRole, schema=SCHEMA), nullable=False, default=UserRole.WORKER)
-    bill = Column(BigInteger, nullable=False, unique=True)
